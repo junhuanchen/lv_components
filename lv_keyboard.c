@@ -8,16 +8,10 @@
  *      INCLUDES
  *********************/
 #include "lv_keyboard.h"
-#if LV_USE_KEYBOARD != 0
-
-#include "../lv_misc/lv_debug.h"
-#include "../lv_themes/lv_theme.h"
-#include "lv_textarea.h"
 
 /*********************
  *      DEFINES
  *********************/
-#define LV_OBJX_NAME "lv_keyboard"
 
 /**********************
  *      TYPEDEFS
@@ -114,12 +108,10 @@ static const lv_btnmatrix_ctrl_t * kb_ctrl[4] = {
  * @param copy pointer to a keyboard object, if not NULL then the new object will be copied from it
  * @return pointer to the created keyboard
  */
-lv_obj_t * lv_keyboard_create(lv_obj_t * par, const lv_obj_t * copy)
+lv_obj_t * lv_keyboard_create(lv_obj_t * parent)
 {
-    LV_LOG_TRACE("keyboard create started");
-
     /*Create the ancestor of keyboard*/
-    lv_obj_t * kb = lv_btnmatrix_create(par, copy);
+    lv_obj_t * kb = lv_btnmatrix_create(parent, NULL);
     LV_ASSERT_MEM(kb);
     if(kb == NULL) return NULL;
 
@@ -142,37 +134,19 @@ lv_obj_t * lv_keyboard_create(lv_obj_t * par, const lv_obj_t * copy)
     lv_obj_set_signal_cb(kb, lv_keyboard_signal);
 
     /*Init the new keyboard keyboard*/
-    if(copy == NULL) {
-        /* Set a size which fits into the parent.
-         * Don't use `par` directly because if the window is created on a page it is moved to the
-         * scrollable so the parent has changed */
-        lv_obj_set_size(kb, lv_obj_get_width_fit(lv_obj_get_parent(kb)),
-                        lv_obj_get_height_fit(lv_obj_get_parent(kb)) / 2);
-        lv_obj_align(kb, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-        lv_obj_set_event_cb(kb, lv_keyboard_def_event_cb);
-        lv_obj_set_base_dir(kb, LV_BIDI_DIR_LTR);
-        lv_obj_add_protect(kb, LV_PROTECT_CLICK_FOCUS);
+    /* Set a size which fits into the parent.
+     * Don't use `par` directly because if the window is created on a page it is moved to the
+     * scrollable so the parent has changed */
+    lv_obj_set_size(kb, lv_obj_get_width_fit(lv_obj_get_parent(kb)),
+                    lv_obj_get_height_fit(lv_obj_get_parent(kb)) / 2);
+    lv_obj_align(kb, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+    lv_obj_set_event_cb(kb, lv_keyboard_def_event_cb);
+    lv_obj_set_base_dir(kb, LV_BIDI_DIR_LTR);
 
-        lv_btnmatrix_set_map(kb, kb_map[ext->mode]);
-        lv_btnmatrix_set_ctrl_map(kb, kb_ctrl[ext->mode]);
+    lv_btnmatrix_set_map(kb, kb_map[ext->mode]);
+    lv_btnmatrix_set_ctrl_map(kb, kb_ctrl[ext->mode]);
 
-        lv_theme_apply(kb, LV_THEME_KEYBOARD);
-    }
-    /*Copy an existing keyboard*/
-    else {
-        lv_keyboard_ext_t * copy_ext = lv_obj_get_ext_attr(copy);
-        ext->ta                = copy_ext->ta;
-        ext->mode              = copy_ext->mode;
-        ext->cursor_mng        = copy_ext->cursor_mng;
-
-        lv_btnmatrix_set_map(kb, kb_map[ext->mode]);
-        lv_btnmatrix_set_ctrl_map(kb, kb_ctrl[ext->mode]);
-
-        /*Refresh the style with new signal function*/
-        //        lv_obj_refresh_style(new_kb);
-    }
-
-    LV_LOG_INFO("keyboard created");
+//        lv_theme_apply(kb, LV_THEME_KEYBOARD);
 
     return kb;
 }
@@ -189,7 +163,9 @@ lv_obj_t * lv_keyboard_create(lv_obj_t * par, const lv_obj_t * copy)
 void lv_keyboard_set_textarea(lv_obj_t * kb, lv_obj_t * ta)
 {
     LV_ASSERT_OBJ(kb, LV_OBJX_NAME);
-    if(ta) LV_ASSERT_OBJ(ta, "lv_textarea");
+    if(ta) {
+        LV_ASSERT_OBJ(ta, "lv_textarea");
+    }
 
     lv_keyboard_ext_t * ext = lv_obj_get_ext_attr(kb);
 
@@ -442,12 +418,8 @@ static lv_res_t lv_keyboard_signal(lv_obj_t * kb, lv_signal_t sign, void * param
     /* Include the ancient signal function */
     res = ancestor_signal(kb, sign, param);
     if(res != LV_RES_OK) return res;
-    if(sign == LV_SIGNAL_GET_TYPE) return lv_obj_handle_get_type_signal(param, LV_OBJX_NAME);
 
-    if(sign == LV_SIGNAL_CLEANUP) {
-        /*Nothing to cleanup. (No dynamically allocated memory in 'ext')*/
-    }
-    else if(sign == LV_SIGNAL_FOCUS) {
+    if(sign == LV_SIGNAL_FOCUS) {
         lv_keyboard_ext_t * ext = lv_obj_get_ext_attr(kb);
         /*Show the cursor of the Text area if cursor management is enabled*/
         if(ext->ta && ext->cursor_mng) {
@@ -476,4 +448,3 @@ static void lv_keyboard_update_map(lv_obj_t * kb)
     lv_btnmatrix_set_ctrl_map(kb, kb_ctrl[ext->mode]);
 }
 
-#endif

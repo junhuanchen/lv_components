@@ -13,9 +13,7 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include "../lv_conf_internal.h"
-
-#if LV_USE_KEYBOARD != 0
+#include "lvgl/lvgl.h"
 
 /*Testing of dependencies*/
 #if LV_USE_BTNMATRIX == 0
@@ -25,9 +23,6 @@ extern "C" {
 #if LV_USE_TEXTAREA == 0
 #error "lv_kb: lv_ta is required. Enable it in lv_conf.h (LV_USE_TEXTAREA  1) "
 #endif
-
-#include "../lv_core/lv_obj.h"
-#include "lv_btnmatrix.h"
 
 /*********************
  *      DEFINES
@@ -56,12 +51,6 @@ typedef struct {
     uint8_t cursor_mng : 1; /*1: automatically show/hide cursor when a text area is assigned or left*/
 } lv_keyboard_ext_t;
 
-enum {
-    LV_KEYBOARD_PART_BG,
-    LV_KEYBOARD_PART_BTN,
-};
-typedef uint8_t lv_keyboard_style_t;
-
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
@@ -72,7 +61,7 @@ typedef uint8_t lv_keyboard_style_t;
  * @param copy pointer to a keyboard object, if not NULL then the new object will be copied from it
  * @return pointer to the created keyboard
  */
-lv_obj_t * lv_keyboard_create(lv_obj_t * par, const lv_obj_t * copy);
+lv_obj_t * lv_keyboard_create(lv_obj_t * parent);
 
 /*=====================
  * Setter functions
@@ -170,8 +159,6 @@ void lv_keyboard_def_event_cb(lv_obj_t * kb, lv_event_t event);
 /**********************
  *      MACROS
  **********************/
-
-#endif /*LV_USE_KEYBOARD*/
 
 #ifdef __cplusplus
 } /* extern "C" */

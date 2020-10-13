@@ -13,11 +13,7 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include "../lv_conf_internal.h"
-
-#if LV_USE_CALENDAR != 0
-
-#include "../lv_core/lv_obj.h"
+#include "lvgl/lvgl.h"
 
 /*********************
  *      DEFINES
@@ -38,32 +34,15 @@ typedef struct {
 
 /*Data of calendar*/
 typedef struct {
-    /*None*/ /*Ext. of ancestor*/
+    lv_btnmatrix_ext_t btnm; /*Ext. of ancestor*/
     /*New data for this type */
     lv_calendar_date_t today;               /*Date of today*/
     lv_calendar_date_t showed_date;         /*Currently visible month (day is ignored)*/
-    lv_calendar_date_t * highlighted_dates; /*Apply different style on these days (pointer to an
-                                               array defined by the user)*/
-    int8_t btn_pressing;                    /*-1: prev month pressing, +1 next month pressing on the header*/
+    lv_calendar_date_t * highlighted_dates; /*Apply different style on these days (pointer to an array defined by the user)*/
     uint16_t highlighted_dates_num;          /*Number of elements in `highlighted_days`*/
-    lv_calendar_date_t pressed_date;
-    const char ** day_names;   /*Pointer to an array with the name of the days (NULL: use default names)*/
-    const char ** month_names; /*Pointer to an array with the name of the month (NULL. use default names)*/
-
-    /*Styles*/
-    lv_style_list_t style_header;
-    lv_style_list_t style_day_names;
-    lv_style_list_t style_date_nums;
+    const char * map[8 * 7];
+    char nums [7 * 6][4];
 } lv_calendar_ext_t;
-
-/** Calendar parts*/
-enum {
-    LV_CALENDAR_PART_BG, /**< Background and "normal" date numbers style */
-    LV_CALENDAR_PART_HEADER, /** Calendar header style */
-    LV_CALENDAR_PART_DAY_NAMES, /** Day name style */
-    LV_CALENDAR_PART_DATE, /** Day name style */
-};
-typedef uint8_t lv_calendar_part_t;
 
 /**********************
  * GLOBAL PROTOTYPES
@@ -75,7 +54,7 @@ typedef uint8_t lv_calendar_part_t;
  * @param copy pointer to a calendar object, if not NULL then the new object will be copied from it
  * @return pointer to the created calendar
  */
-lv_obj_t * lv_calendar_create(lv_obj_t * par, const lv_obj_t * copy);
+lv_obj_t * lv_calendar_create(lv_obj_t * parent);
 
 /*======================
  * Add/remove functions
@@ -118,15 +97,6 @@ void lv_calendar_set_highlighted_dates(lv_obj_t * calendar, lv_calendar_date_t h
  * later.
  */
 void lv_calendar_set_day_names(lv_obj_t * calendar, const char ** day_names);
-
-/**
- * Set the name of the month
- * @param calendar pointer to a calendar object
- * @param month_names pointer to an array with the names. E.g. `const char * days[12] = {"Jan", "Feb",
- * ...}` Only the pointer will be saved so this variable can't be local which will be destroyed
- * later.
- */
-void lv_calendar_set_month_names(lv_obj_t * calendar, const char ** month_names);
 
 /*=====================
  * Getter functions
@@ -175,13 +145,6 @@ uint16_t lv_calendar_get_highlighted_dates_num(const lv_obj_t * calendar);
  */
 const char ** lv_calendar_get_day_names(const lv_obj_t * calendar);
 
-/**
- * Get the name of the month
- * @param calendar pointer to a calendar object
- * @return pointer to the array of month names
- */
-const char ** lv_calendar_get_month_names(const lv_obj_t * calendar);
-
 /*=====================
  * Other functions
  *====================*/
@@ -189,8 +152,6 @@ const char ** lv_calendar_get_month_names(const lv_obj_t * calendar);
 /**********************
  *      MACROS
  **********************/
-
-#endif /*LV_USE_CALENDAR*/
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -13,11 +13,8 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include "../lv_conf_internal.h"
+#include "lvgl/lvgl.h"
 
-#if LV_USE_LED != 0
-
-#include "../lv_core/lv_obj.h"
 
 /*********************
  *      DEFINES
@@ -34,12 +31,6 @@ typedef struct {
     uint8_t bright; /*Current brightness of the LED (0..255)*/
 } lv_led_ext_t;
 
-/*Parts of LED*/
-enum {
-    LV_LED_PART_MAIN = LV_OBJ_PART_MAIN,
-};
-typedef uint8_t lv_led_part_t;
-
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
@@ -50,7 +41,7 @@ typedef uint8_t lv_led_part_t;
  * @param copy pointer to a led object, if not NULL then the new object will be copied from it
  * @return pointer to the created led
  */
-lv_obj_t * lv_led_create(lv_obj_t * par, const lv_obj_t * copy);
+lv_obj_t * lv_led_create(lv_obj_t * parent);
 
 /**
  * Set the brightness of a LED object
@@ -94,4 +85,3 @@ uint8_t lv_led_get_bright(const lv_obj_t * led);
 } /* extern "C" */
 #endif
 
-#endif /*LV_LED_H*/
