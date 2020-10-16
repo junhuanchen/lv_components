@@ -38,16 +38,16 @@ static const char * month_names_def[12] = {"January", "February", "March",     "
  *   GLOBAL FUNCTIONS
  **********************/
 
-lv_obj_t * lv_calendar_header_arrow_create(lv_obj_t * parent, lv_obj_t * calendar, const char * month_names[], lv_coord_t btn_size)
+lv_obj_t * lv_calendar_header_arrow_create(lv_obj_t * parent, const char * month_names[], lv_coord_t btn_size)
 {
     lv_obj_t * header = lv_obj_create(parent, NULL);
     lv_calendar_header_arrow_ext_t * ext = lv_obj_allocate_ext_attr(header, sizeof(lv_calendar_header_arrow_ext_t));
     _lv_memset_00(ext, sizeof(lv_calendar_header_arrow_ext_t));
-    ext->calendar = calendar;
+    ext->calendar = NULL;
     ext->month_names = month_names == NULL ? month_names_def : month_names;
 
-    lv_obj_set_size(header, lv_obj_get_width(calendar), LV_SIZE_AUTO);
-    header->flex_dir = 1;
+    lv_obj_set_size(header,  2 * LV_DPI, LV_SIZE_AUTO);
+    lv_obj_set_flex_cont(header, LV_FLEX_DIR_ROW);
 
     lv_obj_t * mo_prev = lv_btn_create(header, NULL);
     lv_obj_set_style_local_value_str(mo_prev,  LV_BTN_PART_MAIN, LV_STATE_DEFAULT,  LV_SYMBOL_LEFT);
@@ -71,6 +71,11 @@ lv_obj_t * lv_calendar_header_arrow_create(lv_obj_t * parent, lv_obj_t * calenda
     return header;
 }
 
+void lv_calendar_header_arrow_set_calendar(lv_obj_t * header, lv_obj_t * calendar)
+{
+    lv_calendar_header_arrow_ext_t * ext = lv_obj_allocate_ext_attr(header, sizeof(lv_calendar_header_arrow_ext_t));
+    ext->calendar = calendar;
+}
 
 /**********************
  *  STATIC FUNCTIONS
@@ -81,6 +86,8 @@ static void month_event_cb(lv_obj_t * btn, lv_event_t e)
 
     lv_obj_t * header = lv_obj_get_parent(btn);
     lv_calendar_header_arrow_ext_t * ext = lv_obj_get_ext_attr(header);
+
+    if(ext->calendar == NULL) return;
 
     lv_calendar_date_t * d;
     d = lv_calendar_get_showed_date(ext->calendar);

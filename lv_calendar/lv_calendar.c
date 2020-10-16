@@ -76,7 +76,7 @@ lv_obj_t * lv_calendar_create(lv_obj_t * parent, const char * day_names[])
 
     if(day_names == NULL) day_names = day_names_def;
 
-    lv_obj_set_size(calendar, 5 * LV_DPI / 2, 5 * LV_DPI / 2);
+    lv_obj_set_size(calendar, 2 * LV_DPI, 2 * LV_DPI);
 
     _lv_memset_00(ext->nums, sizeof(ext->nums));
     uint8_t i;
