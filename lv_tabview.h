@@ -35,6 +35,8 @@ lv_obj_t * lv_tabview_get_content(lv_obj_t * tv);
 
 lv_obj_t * lv_tabview_get_tab_btns(lv_obj_t * tv);
 
+void lv_tabview_set_act(lv_obj_t * tv, uint32_t id);
+
 /**********************
  *      MACROS
  **********************/

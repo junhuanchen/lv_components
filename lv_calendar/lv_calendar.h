@@ -54,7 +54,7 @@ typedef struct {
  * @param copy pointer to a calendar object, if not NULL then the new object will be copied from it
  * @return pointer to the created calendar
  */
-lv_obj_t * lv_calendar_create(lv_obj_t * parent);
+lv_obj_t * lv_calendar_create(lv_obj_t * parent, const char * day_names[]);
 
 /*======================
  * Add/remove functions

@@ -11,7 +11,6 @@
 /*********************
  *      DEFINES
  *********************/
-#define LV_OBJX_NAME "lv_calendar"
 
 /**********************
  *      TYPEDEFS
@@ -28,6 +27,11 @@ static void highlight_update(lv_obj_t * calendar);
 /**********************
  *  STATIC VARIABLES
  **********************/
+#if LV_CALENDAR_WEEK_STARTS_MONDAY != 0
+static const char * day_names_def[7]    = {"Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"};
+#else
+static const char * day_names_def[7]    = {"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"};
+#endif
 
 /**********************
  *      MACROS
@@ -43,7 +47,7 @@ static void highlight_update(lv_obj_t * calendar);
  * @param copy pointer to a calendar object, if not NULL then the new object will be copied from it
  * @return pointer to the created calendar
  */
-lv_obj_t * lv_calendar_create(lv_obj_t * parent)
+lv_obj_t * lv_calendar_create(lv_obj_t * parent, const char * day_names[])
 {
     /*Create the ancestor of calendar*/
     lv_obj_t * calendar = lv_btnmatrix_create(parent, NULL);
@@ -70,6 +74,8 @@ lv_obj_t * lv_calendar_create(lv_obj_t * parent)
     ext->highlighted_dates      = NULL;
     ext->highlighted_dates_num  = 0;
 
+    if(day_names == NULL) day_names = day_names_def;
+
     lv_obj_set_size(calendar, 5 * LV_DPI / 2, 5 * LV_DPI / 2);
 
     _lv_memset_00(ext->nums, sizeof(ext->nums));
@@ -80,7 +86,7 @@ lv_obj_t * lv_calendar_create(lv_obj_t * parent)
         if(i != 0 && (i + 1) % 8 == 0) {
             ext->map[i] = "\n";
         } else if(i < 8){
-            ext->map[i] = "a";
+            ext->map[i] = day_names[i];
         } else {
             ext->nums[j][0] = 'x';
             ext->map[i] = ext->nums[j];
@@ -95,6 +101,7 @@ lv_obj_t * lv_calendar_create(lv_obj_t * parent)
         lv_btnmatrix_set_btn_ctrl(calendar, i, LV_BTNMATRIX_CTRL_TYPE_2);
     }
 
+    lv_calendar_set_showed_date(calendar, &ext->showed_date);
     lv_calendar_set_today_date(calendar, &ext->today);
 
     return calendar;
@@ -128,32 +135,24 @@ void lv_calendar_set_today_date(lv_obj_t * calendar, lv_calendar_date_t * today)
     ext->today.month        = today->month;
     ext->today.day          = today->day;
 
-    lv_calendar_date_t d;
-    d.year = today->year;
-    d.month = today->month;
-    d.day = 0;
+    highlight_update(calendar);
+}
 
-    uint8_t mo_len = get_month_length(d.year, d.month);
-    uint8_t day_first = get_day_of_week(d.year, d.month, d.day);
-    uint8_t i;
-    uint8_t c;
-    for(i = day_first, c = 1; i < mo_len + day_first; i++, c++) {
-        lv_snprintf(ext->nums[i], sizeof(ext->nums[0]), "%d", c);
-    }
+/**
+ * Set the the highlighted dates
+ * @param calendar pointer to a calendar object
+ * @param highlighted pointer to an `lv_calendar_date_t` array containing the dates. ONLY A POINTER
+ * WILL BE SAVED! CAN'T BE LOCAL ARRAY.
+ * @param date_num number of dates in the array
+ */
+void lv_calendar_set_highlighted_dates(lv_obj_t * calendar, lv_calendar_date_t highlighted[], uint16_t date_num)
+{
+    LV_ASSERT_OBJ(calendar, LV_OBJX_NAME);
+    LV_ASSERT_NULL(highlighted);
 
-    mo_len = get_month_length(today->year, today->month - 1);
-    for(i = 0, c = mo_len - day_first + 1; i < day_first; i++, c++) {
-        lv_snprintf(ext->nums[i], sizeof(ext->nums[0]), "%d", c);
-        lv_btnmatrix_set_btn_ctrl(calendar, i + 7, LV_BTNMATRIX_CTRL_DISABLED);
-    }
-
-    mo_len = get_month_length(today->year, today->month + 1);
-    for(i = day_first + mo_len, c = 1; i < 6 * 7; i++, c++) {
-        lv_snprintf(ext->nums[i], sizeof(ext->nums[0]), "%d", c);
-        lv_btnmatrix_set_btn_ctrl(calendar, i + 7, LV_BTNMATRIX_CTRL_DISABLED);
-    }
-
-    lv_btnmatrix_set_map(calendar, ext->map);
+    lv_calendar_ext_t * ext    = lv_obj_get_ext_attr(calendar);
+    ext->highlighted_dates     = highlighted;
+    ext->highlighted_dates_num = date_num;
 
     highlight_update(calendar);
 }
@@ -174,27 +173,34 @@ void lv_calendar_set_showed_date(lv_obj_t * calendar, lv_calendar_date_t * showe
     ext->showed_date.month  = showed->month;
     ext->showed_date.day    = showed->day;
 
-    lv_obj_invalidate(calendar);
-}
+    lv_calendar_date_t d;
+    d.year = ext->showed_date.year;
+    d.month = ext->showed_date.month;
+    d.day = ext->showed_date.day;
 
-/**
- * Set the the highlighted dates
- * @param calendar pointer to a calendar object
- * @param highlighted pointer to an `lv_calendar_date_t` array containing the dates. ONLY A POINTER
- * WILL BE SAVED! CAN'T BE LOCAL ARRAY.
- * @param date_num number of dates in the array
- */
-void lv_calendar_set_highlighted_dates(lv_obj_t * calendar, lv_calendar_date_t highlighted[], uint16_t date_num)
-{
-    LV_ASSERT_OBJ(calendar, LV_OBJX_NAME);
-    LV_ASSERT_NULL(highlighted);
+    lv_btnmatrix_clear_btn_ctrl_all(calendar, LV_BTNMATRIX_CTRL_DISABLED);
 
-    lv_calendar_ext_t * ext    = lv_obj_get_ext_attr(calendar);
-    ext->highlighted_dates     = highlighted;
-    ext->highlighted_dates_num = date_num;
+    uint8_t act_mo_len = get_month_length(d.year, d.month);
+    uint8_t day_first = get_day_of_week(d.year, d.month, d.day);
+    uint8_t i;
+    uint8_t c;
+    for(i = day_first, c = 1; i < act_mo_len + day_first; i++, c++) {
+        lv_snprintf(ext->nums[i], sizeof(ext->nums[0]), "%d", c);
+    }
+
+    uint8_t prev_mo_len = get_month_length(d.year, d.month - 1);
+    for(i = 0, c = prev_mo_len - day_first + 1; i < day_first; i++, c++) {
+        lv_snprintf(ext->nums[i], sizeof(ext->nums[0]), "%d", c);
+        lv_btnmatrix_set_btn_ctrl(calendar, i + 7, LV_BTNMATRIX_CTRL_DISABLED);
+    }
+
+    for(i = day_first + act_mo_len, c = 1; i < 6 * 7; i++, c++) {
+        lv_snprintf(ext->nums[i], sizeof(ext->nums[0]), "%d", c);
+        lv_btnmatrix_set_btn_ctrl(calendar, i + 7, LV_BTNMATRIX_CTRL_DISABLED);
+    }
 
     highlight_update(calendar);
-
+    lv_obj_invalidate(calendar);
 }
 
 /*=====================
@@ -253,7 +259,6 @@ uint16_t lv_calendar_get_highlighted_dates_num(const lv_obj_t * calendar)
     return ext->highlighted_dates_num;
 }
 
-
 /**********************
  *  STATIC FUNCTIONS
  **********************/
@@ -261,12 +266,13 @@ uint16_t lv_calendar_get_highlighted_dates_num(const lv_obj_t * calendar)
 /**
  * Get the number of days in a month
  * @param year a year
- * @param month a month. The range is basically [0..11] but [-11..0] or [12..23] is also
+ * @param month a month. The range is basically [1..12] but [-11..0] or [13..24] is also
  *              supported to handle next/prev. year
  * @return [28..31]
  */
 static uint8_t get_month_length(int32_t year, int32_t month)
 {
+    month--;
     if(month < 0) {
         year--;             /*Already in the previous year (won't be less then -12 to skip a whole year)*/
         month = 12 + month; /*`month` is negative, the result will be < 12*/
@@ -314,9 +320,14 @@ static uint8_t get_day_of_week(uint32_t year, uint32_t month, uint32_t day)
 static void highlight_update(lv_obj_t * calendar)
 {
     lv_calendar_ext_t * ext = lv_obj_get_ext_attr(calendar);
-
-    lv_btnmatrix_clear_btn_ctrl_all(calendar, LV_BTNMATRIX_CTRL_CHECKED);
     uint16_t i;
+
+    /*Clear all kind of selection but revert type on day names*/
+    lv_btnmatrix_clear_btn_ctrl_all(calendar, LV_BTNMATRIX_CTRL_CHECKED |  LV_BTNMATRIX_CTRL_TYPE_2);
+    for(i = 0; i < 7; i++) {
+        lv_btnmatrix_set_btn_ctrl(calendar, i, LV_BTNMATRIX_CTRL_TYPE_2);
+    }
+
     if(ext->highlighted_dates) {
         for(i = 0; i < ext->highlighted_dates_num; i++) {
             if(ext->highlighted_dates[i].year == ext->today.year && ext->highlighted_dates[i].month == ext->showed_date.month) {
@@ -327,6 +338,6 @@ static void highlight_update(lv_obj_t * calendar)
 
     if(ext->showed_date.year == ext->today.year && ext->showed_date.month == ext->today.month) {
         uint8_t day_first = get_day_of_week(ext->today.year, ext->today.month, ext->today.day - 1);
-        lv_btnmatrix_set_btn_ctrl(calendar, ext->today.day - 1 + day_first + 7, LV_BTNMATRIX_CTRL_TYPE_2 | LV_BTNMATRIX_CTRL_CHECKED);
+        lv_btnmatrix_set_btn_ctrl(calendar, ext->today.day + day_first + 7, LV_BTNMATRIX_CTRL_TYPE_2 | LV_BTNMATRIX_CTRL_CHECKED);
     }
 }
