@@ -47,15 +47,17 @@ lv_obj_t * lv_tabview_create(lv_obj_t * parent, lv_dir_t tab_pos, lv_coord_t tab
     lv_flex_dir_t flex_dir;
     switch(tab_pos) {
     case LV_DIR_TOP:
+    case LV_DIR_BOTTOM:
         flex_dir = LV_FLEX_DIR_COLUMN;
         break;
-    case LV_DIR_BOTTOM:
+    case LV_DIR_LEFT:
+    case LV_DIR_RIGHT:
         flex_dir = LV_FLEX_DIR_ROW;
         break;
     }
 
     lv_obj_set_size(tabview, 200, 200);
-    tabview->flex_dir = flex_dir;
+    lv_obj_set_flex_cont(tabview, flex_dir);
 
     lv_obj_t * btnm;
     lv_obj_t * cont;
@@ -77,10 +79,12 @@ lv_obj_t * lv_tabview_create(lv_obj_t * parent, lv_dir_t tab_pos, lv_coord_t tab
 
     switch(tab_pos) {
      case LV_DIR_TOP:
+     case LV_DIR_LEFT:
          lv_obj_set_size(btnm, LV_COORD_PCT(100), tab_size);
          lv_obj_set_size(cont, LV_COORD_PCT(100), LV_FLEX_GROW(1));
          break;
      case LV_DIR_BOTTOM:
+     case LV_DIR_RIGHT:
          lv_obj_set_size(btnm, LV_COORD_PCT(100), tab_size);
          lv_obj_set_size(cont, LV_FLEX_GROW(1), LV_COORD_PCT(100));
          break;
@@ -113,13 +117,17 @@ lv_obj_t * lv_tabview_add_tab(lv_obj_t * tv, const char * name)
 
     const char ** old_map = lv_btnmatrix_get_map_array(btns);
     const char ** new_map;
+
+    /*top or bottom dir*/
     if(tv->flex_dir == LV_FLEX_DIR_COLUMN) {
         new_map = lv_mem_alloc((tab_id + 1) * sizeof(const char *));
         _lv_memcpy_small(new_map, old_map, sizeof(const char *) * (tab_id - 1));
         new_map[tab_id - 1] = lv_mem_alloc(strlen(name) + 1);
         strcpy((char *)new_map[tab_id - 1], name);
         new_map[tab_id] = "";
-    } else {
+    }
+    /*left or right dir*/
+    else {
         new_map = lv_mem_alloc((tab_id * 2) * sizeof(const char *));
         _lv_memcpy_small(new_map, old_map, sizeof(const char *) * tab_id * 2);
         if(ext->tab_cnt == 0) {
