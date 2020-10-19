@@ -1,6 +1,6 @@
 
 /**
- * @file lv_kb.c
+ * @file lv_keyboard.c
  *
  */
 
@@ -81,17 +81,19 @@ static const lv_btnmatrix_ctrl_t default_kb_ctrl_num_map[] = {
 };
 /* clang-format on */
 
-static const char * * kb_map[4] = {
+static const char * * kb_map[5] = {
     (const char * *)default_kb_map_lc,
     (const char * *)default_kb_map_uc,
     (const char * *)default_kb_map_spec,
-    (const char * *)default_kb_map_num
+    (const char * *)default_kb_map_num,
+    (const char * *)NULL,
 };
 static const lv_btnmatrix_ctrl_t * kb_ctrl[4] = {
     default_kb_ctrl_lc_map,
     default_kb_ctrl_uc_map,
     default_kb_ctrl_spec_map,
-    default_kb_ctrl_num_map
+    default_kb_ctrl_num_map,
+    NULL,
 };
 
 /**********************
@@ -231,23 +233,9 @@ void lv_keyboard_set_cursor_manage(lv_obj_t * kb, bool en)
  * @param map pointer to a string array to describe the map.
  *            See 'lv_btnmatrix_set_map()' for more info.
  */
-void lv_keyboard_set_map(lv_obj_t * kb, lv_keyboard_mode_t mode, const char * map[])
+void lv_keyboard_set_map(lv_obj_t * kb, lv_keyboard_mode_t mode, const char * map[], const lv_btnmatrix_ctrl_t ctrl_map[])
 {
     kb_map[mode] = map;
-    lv_keyboard_update_map(kb);
-}
-
-/**
- * Set the button control map (hidden, disabled etc.) for the keyboard. The
- * control map array will be copied and so may be deallocated after this
- * function returns.
- * @param kb pointer to a keyboard object
- * @param mode keyboard ctrl map to alter 'lv_keyboard_mode_t'
- * @param ctrl_map pointer to an array of `lv_btn_ctrl_t` control bytes.
- *                 See: `lv_btnmatrix_set_ctrl_map` for more details.
- */
-void lv_keyboard_set_ctrl_map(lv_obj_t * kb, lv_keyboard_mode_t mode, const lv_btnmatrix_ctrl_t ctrl_map[])
-{
     kb_ctrl[mode] = ctrl_map;
     lv_keyboard_update_map(kb);
 }

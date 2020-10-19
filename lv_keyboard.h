@@ -38,7 +38,8 @@ enum {
     LV_KEYBOARD_MODE_TEXT_LOWER,
     LV_KEYBOARD_MODE_TEXT_UPPER,
     LV_KEYBOARD_MODE_SPECIAL,
-    LV_KEYBOARD_MODE_NUM,
+    LV_KEYBOARD_MODE_NUMBER,
+    LV_KEYBOARD_MODE_CUSTOM,
 };
 typedef uint8_t lv_keyboard_mode_t;
 
@@ -95,18 +96,7 @@ void lv_keyboard_set_cursor_manage(lv_obj_t * kb, bool en);
  * @param map pointer to a string array to describe the map.
  *            See 'lv_btnmatrix_set_map()' for more info.
  */
-void lv_keyboard_set_map(lv_obj_t * kb, lv_keyboard_mode_t mode, const char * map[]);
-
-/**
- * Set the button control map (hidden, disabled etc.) for the keyboard. The
- * control map array will be copied and so may be deallocated after this
- * function returns.
- * @param kb pointer to a keyboard object
- * @param mode keyboard ctrl map to alter 'lv_keyboard_mode_t'
- * @param ctrl_map pointer to an array of `lv_btn_ctrl_t` control bytes.
- *                 See: `lv_btnmatrix_set_ctrl_map` for more details.
- */
-void lv_keyboard_set_ctrl_map(lv_obj_t * kb, lv_keyboard_mode_t mode, const lv_btnmatrix_ctrl_t ctrl_map[]);
+void lv_keyboard_set_map(lv_obj_t * kb, lv_keyboard_mode_t mode, const char * map[], const lv_btnmatrix_ctrl_t ctrl_map[]);
 
 /*=====================
  * Getter functions
