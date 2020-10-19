@@ -52,12 +52,14 @@ lv_obj_t * lv_list_add_text(lv_obj_t * list, const char * txt)
 
 lv_obj_t * lv_list_add_btn(lv_obj_t * list, const char * txt)
 {
-    lv_obj_t * label = lv_label_create(list, NULL);
+    lv_obj_t * btn = lv_btn_create(list, NULL);
+    lv_obj_set_flex_item(btn, LV_FLEX_START);
+    lv_obj_set_width(btn, LV_COORD_PCT(100));
+
+    lv_obj_t * label = lv_label_create(btn, NULL);
     lv_label_set_text(label, txt);
     lv_label_set_long_mode(label, LV_LABEL_LONG_SROLL_CIRC);
-    lv_obj_set_flex_item(label, LV_FLEX_START);
-    lv_obj_add_flag(label, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_set_width(label, LV_COORD_PCT(100));
+
     return label;
 }
 
