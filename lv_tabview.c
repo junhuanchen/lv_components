@@ -47,12 +47,16 @@ lv_obj_t * lv_tabview_create(lv_obj_t * parent, lv_dir_t tab_pos, lv_coord_t tab
     lv_flex_dir_t flex_dir;
     switch(tab_pos) {
     case LV_DIR_TOP:
-    case LV_DIR_BOTTOM:
         flex_dir = LV_FLEX_DIR_COLUMN;
         break;
+    case LV_DIR_BOTTOM:
+        flex_dir = LV_FLEX_DIR_COLUMN | LV_FLEX_REVERSE;
+        break;
     case LV_DIR_LEFT:
-    case LV_DIR_RIGHT:
         flex_dir = LV_FLEX_DIR_ROW;
+        break;
+    case LV_DIR_RIGHT:
+        flex_dir = LV_FLEX_DIR_ROW | LV_FLEX_REVERSE;
         break;
     }
 
