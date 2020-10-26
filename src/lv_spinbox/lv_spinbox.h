@@ -15,15 +15,11 @@ extern "C" {
  *********************/
 #include "lvgl/lvgl.h"
 
-#if LV_USE_SPINBOX != 0
 
 /*Testing of dependencies*/
 #if LV_USE_TEXTAREA == 0
 #error "lv_spinbox: lv_ta is required. Enable it in lv_conf.h (LV_USE_TEXTAREA  1) "
 #endif
-
-#include "../lv_core/lv_obj.h"
-#include "../lv_widgets/lv_textarea.h"
 
 /*********************
  *      DEFINES
@@ -42,18 +38,15 @@ typedef struct {
     int32_t range_max;
     int32_t range_min;
     int32_t step;
-    uint8_t rollover : 1;   // Set to true for rollover functionality
     uint16_t digit_count : 4;
     uint16_t dec_point_pos : 4; /*if 0, there is no separator and the number is an integer*/
-    uint16_t digit_padding_left : 4;
+    uint16_t rollover : 1;   // Set to true for rollover functionality
 } lv_spinbox_ext_t;
 
-/*Styles*/
 enum {
-    LV_SPINBOX_PART_BG = LV_TEXTAREA_PART_BG,
+    LV_SPINBOX_PART_MAIN = LV_TEXTAREA_PART_MAIN,
     LV_SPINBOX_PART_CURSOR = LV_TEXTAREA_PART_CURSOR,
     _LV_SPINBOX_PART_VIRTUAL_LAST = _LV_TEXTAREA_PART_VIRTUAL_LAST,
-    _LV_SPINBOX_PART_REAL_LAST = _LV_TEXTAREA_PART_REAL_LAST,
 };
 typedef uint8_t lv_spinbox_part_t;
 
@@ -67,7 +60,7 @@ typedef uint8_t lv_spinbox_part_t;
  * @param copy pointer to a spinbox object, if not NULL then the new object will be copied from it
  * @return pointer to the created spinbox
  */
-lv_obj_t * lv_spinbox_create(lv_obj_t * par, const lv_obj_t * copy);
+lv_obj_t * lv_spinbox_create(lv_obj_t * parent);
 
 /*=====================
  * Setter functions
@@ -172,5 +165,3 @@ void lv_spinbox_decrement(lv_obj_t * spinbox);
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
-
-#endif /*LV_SPINBOX_H*/

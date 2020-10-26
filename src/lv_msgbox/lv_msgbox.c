@@ -19,6 +19,7 @@
 /**********************
  *  STATIC PROTOTYPES
  **********************/
+static void msgbox_label_event_cb(lv_obj_t * label, lv_event_t e);
 
 /**********************
  *  STATIC VARIABLES
@@ -39,18 +40,22 @@
  * it
  * @return pointer to the created message box
  */
-lv_obj_t * lv_msgbox_create(lv_obj_t * parent, const char * title, const char * txt, const char * btn_txts[])
+lv_obj_t * lv_msgbox_create(const char * title, const char * txt, const char * btn_txts[], bool modal)
 {
+    lv_obj_t * parent = lv_layer_top();
+    if(modal) lv_obj_add_flag(parent, LV_OBJ_FLAG_CLICKABLE);
+
     /*Create the ancestor message box*/
     lv_obj_t * mbox = lv_obj_create(parent, NULL);
     LV_ASSERT_MEM(mbox);
     if(mbox == NULL) return NULL;
 
     lv_coord_t w = lv_obj_get_width_fit(parent);
+
     if(w > 2 * LV_DPI) w = 2 * LV_DPI;
 
     lv_obj_set_size(mbox, w, LV_SIZE_AUTO);
-    lv_obj_set_flex_cont(mbox, LV_FLEX_DIR_COLUMN);
+    lv_obj_set_flex_cont(mbox, LV_FLEX_DIR_COLUMN, LV_FLEX_START);
 
     lv_obj_t * label;
     label = lv_label_create(mbox, NULL);
@@ -64,6 +69,7 @@ lv_obj_t * lv_msgbox_create(lv_obj_t * parent, const char * title, const char * 
     lv_label_set_long_mode(label, LV_LABEL_LONG_BREAK);
     lv_obj_set_width(label, LV_COORD_PCT(100));
     lv_obj_set_flex_item(label, LV_FLEX_START);
+    lv_obj_set_event_cb(label, msgbox_label_event_cb);
 
     lv_obj_t * btns = lv_btnmatrix_create(mbox, NULL);
     lv_btnmatrix_set_map(btns, btn_txts);
@@ -95,4 +101,22 @@ lv_obj_t * lv_msgboxget_text(lv_obj_t * mbox)
 lv_obj_t * lv_msgboxget_btns(lv_obj_t * mbox)
 {
     return lv_obj_get_child_by_id(mbox, 2);
+}
+
+/**********************
+ *   STATIC FUNCTIONS
+ **********************/
+
+/**
+ * Make the top layer non clickable again.
+ * Attach this event to label instead of the message box's container
+ * because probably the user will attach his own event to it.
+ * @param label pointer to the text the message box
+ * @param e the event
+ */
+static void msgbox_label_event_cb(lv_obj_t * label, lv_event_t e)
+{
+    if(e == LV_EVENT_DELETE) {
+        lv_obj_clear_flag(lv_layer_top(), LV_OBJ_FLAG_CLICKABLE);
+    }
 }

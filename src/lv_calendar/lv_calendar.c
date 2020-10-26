@@ -32,6 +32,7 @@ static const char * day_names_def[7]    = {"Mo", "Tu", "We", "Th", "Fr", "Sa", "
 #else
 static const char * day_names_def[7]    = {"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"};
 #endif
+static bool inited = false;
 
 /**********************
  *      MACROS
@@ -49,6 +50,31 @@ static const char * day_names_def[7]    = {"Su", "Mo", "Tu", "We", "Th", "Fr", "
  */
 lv_obj_t * lv_calendar_create(lv_obj_t * parent, const char * day_names[])
 {
+    static lv_style_t style_bg;
+    static lv_style_t style_btn1;
+    static lv_style_t style_btn2;
+    if(!inited) {
+        lv_style_init(&style_bg);
+        lv_style_set_radius(&style_bg, LV_STATE_DEFAULT, 0);
+
+        lv_style_init(&style_btn1);
+        lv_style_set_margin_all(&style_btn1, LV_STATE_DEFAULT, 0);
+        lv_style_set_radius(&style_btn1, LV_STATE_DEFAULT, 0);
+        lv_style_set_border_width(&style_btn1, LV_STATE_DEFAULT, 1);
+        lv_style_set_text_font(&style_btn1, LV_STATE_DEFAULT, LV_THEME_DEFAULT_FONT_SMALL);
+
+        lv_style_init(&style_btn2);
+        lv_style_set_radius(&style_btn2, LV_STATE_DEFAULT, 0);
+        lv_style_set_border_width(&style_btn2, LV_STATE_DEFAULT, 0);
+        lv_style_set_border_width(&style_btn2, LV_STATE_CHECKED, 1);
+        lv_style_set_text_font(&style_btn2, LV_STATE_DEFAULT, LV_THEME_DEFAULT_FONT_SMALL);
+        lv_style_set_text_color(&style_btn2, LV_STATE_CHECKED, LV_THEME_DEFAULT_COLOR_PRIMARY);
+        lv_style_set_text_color(&style_btn2, LV_STATE_CHECKED | LV_STATE_PRESSED, LV_THEME_DEFAULT_COLOR_PRIMARY);
+        lv_style_set_bg_opa(&style_btn2, LV_STATE_CHECKED, LV_OPA_10);
+        lv_style_set_bg_opa(&style_btn2, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+        inited = true;
+    }
+
     /*Create the ancestor of calendar*/
     lv_obj_t * calendar = lv_btnmatrix_create(parent, NULL);
     LV_ASSERT_MEM(calendar);
@@ -61,6 +87,10 @@ lv_obj_t * lv_calendar_create(lv_obj_t * parent, const char * day_names[])
         lv_obj_del(calendar);
         return NULL;
     }
+
+    lv_obj_add_style(calendar, LV_BTNMATRIX_PART_MAIN,  &style_bg);
+    lv_obj_add_style(calendar, LV_BTNMATRIX_PART_BTN,  &style_btn1);
+    lv_obj_add_style(calendar, LV_BTNMATRIX_PART_BTN_2,  &style_btn2);
 
     /*Initialize the allocated 'ext' */
     ext->today.year  = 2020;
@@ -103,6 +133,7 @@ lv_obj_t * lv_calendar_create(lv_obj_t * parent, const char * day_names[])
 
     lv_calendar_set_showed_date(calendar, &ext->showed_date);
     lv_calendar_set_today_date(calendar, &ext->today);
+
 
     return calendar;
 }

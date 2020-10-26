@@ -13,7 +13,7 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include "lvgl/lvgl.h"
+#include "../../lv_components.h"
 
 /*********************
  *      DEFINES
@@ -27,10 +27,14 @@ extern "C" {
  * GLOBAL PROTOTYPES
  **********************/
 
-lv_obj_t * lv_win_create(lv_obj_t * parent,  const char * title, lv_coord_t header_height, lv_coord_t btn_w, lv_coord_t btn_h);
+lv_obj_t * lv_win_create(lv_obj_t * parent, lv_coord_t header_height);
 
-lv_obj_t * lv_win_add_btn(lv_obj_t * win, lv_dir_t dir, const void * icon, lv_event_cb_t event_cb);
 
+lv_obj_t * lv_win_add_title(lv_obj_t * win, const char * txt);
+lv_obj_t * lv_win_add_btn(lv_obj_t * win, const void * icon, lv_coord_t btn_w, lv_coord_t btn_h, lv_event_cb_t event_cb);
+
+lv_obj_t * lv_win_get_header(lv_obj_t * win);
+lv_obj_t * lv_win_get_content(lv_obj_t * win);
 /**********************
  *      MACROS
  **********************/

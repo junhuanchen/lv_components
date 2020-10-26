@@ -25,7 +25,7 @@ static void month_event_cb(lv_obj_t * btn, lv_event_t e);
 /**********************
  *  STATIC VARIABLES
  **********************/
-
+static bool inited = false;
 static const char * month_names_def[12] = {"January", "February", "March",     "April",   "May",      "June",
                                       "July",    "August",   "September", "October", "November", "December"
                                      };
@@ -38,16 +38,28 @@ static const char * month_names_def[12] = {"January", "February", "March",     "
  *   GLOBAL FUNCTIONS
  **********************/
 
-lv_obj_t * lv_calendar_header_arrow_create(lv_obj_t * parent, const char * month_names[], lv_coord_t btn_size)
+lv_obj_t * lv_calendar_header_arrow_create(lv_obj_t * parent, lv_obj_t * calendar, const char * month_names[], lv_coord_t btn_size)
 {
+    static lv_style_t style_bg;
+    if(!inited) {
+        lv_style_init(&style_bg);
+        lv_style_set_radius(&style_bg, LV_STATE_DEFAULT, 0);
+        lv_style_set_pad_all(&style_bg, LV_STATE_DEFAULT, 10);
+        lv_style_set_border_side(&style_bg, LV_STATE_DEFAULT, LV_BORDER_SIDE_LEFT | LV_BORDER_SIDE_RIGHT | LV_BORDER_SIDE_TOP);
+    }
+
     lv_obj_t * header = lv_obj_create(parent, NULL);
+
     lv_calendar_header_arrow_ext_t * ext = lv_obj_allocate_ext_attr(header, sizeof(lv_calendar_header_arrow_ext_t));
     _lv_memset_00(ext, sizeof(lv_calendar_header_arrow_ext_t));
-    ext->calendar = NULL;
+    ext->calendar = calendar;
     ext->month_names = month_names == NULL ? month_names_def : month_names;
 
-    lv_obj_set_size(header,  2 * LV_DPI, LV_SIZE_AUTO);
-    lv_obj_set_flex_cont(header, LV_FLEX_DIR_ROW);
+    lv_obj_add_style(header, LV_OBJ_PART_MAIN, &style_bg);
+    lv_coord_t w = calendar ? lv_obj_get_width(calendar) : 2 * LV_DPI;
+    lv_obj_set_size(header,  w, LV_SIZE_AUTO);
+    lv_obj_set_flex_cont(header, LV_FLEX_DIR_ROW, LV_FLEX_CENTER);
+    lv_obj_set_flex_gap(header, LV_DPX(5));
 
     lv_obj_t * mo_prev = lv_btn_create(header, NULL);
     lv_obj_set_style_local_value_str(mo_prev,  LV_BTN_PART_MAIN, LV_STATE_DEFAULT,  LV_SYMBOL_LEFT);

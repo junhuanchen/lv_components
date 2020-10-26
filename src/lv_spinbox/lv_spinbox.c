@@ -8,12 +8,6 @@
  *********************/
 #include "lv_spinbox.h"
 
-#if LV_USE_SPINBOX != 0
-#include "../lv_misc/lv_debug.h"
-#include "../lv_themes/lv_theme.h"
-#include "../lv_misc/lv_math.h"
-#include "../lv_misc/lv_utils.h"
-
 /*********************
  *      DEFINES
  *********************/
@@ -27,14 +21,12 @@
  *  STATIC PROTOTYPES
  **********************/
 static lv_res_t lv_spinbox_signal(lv_obj_t * spinbox, lv_signal_t sign, void * param);
-static lv_style_list_t * lv_spinbox_get_style(lv_obj_t * ta, uint8_t part);
 static void lv_spinbox_updatevalue(lv_obj_t * spinbox);
 
 /**********************
  *  STATIC VARIABLES
  **********************/
 static lv_signal_cb_t ancestor_signal;
-static lv_design_cb_t ancestor_design;
 
 /**********************
  *      MACROS
@@ -50,12 +42,12 @@ static lv_design_cb_t ancestor_design;
  * @param copy pointer to a spinbox object, if not NULL then the new object will be copied from it
  * @return pointer to the created spinbox
  */
-lv_obj_t * lv_spinbox_create(lv_obj_t * par, const lv_obj_t * copy)
+lv_obj_t * lv_spinbox_create(lv_obj_t * parent)
 {
     LV_LOG_TRACE("spinbox create started");
 
     /*Create the ancestor of spinbox*/
-    lv_obj_t * spinbox = lv_textarea_create(par, copy);
+    lv_obj_t * spinbox = lv_textarea_create(parent, NULL);
     LV_ASSERT_MEM(spinbox);
     if(spinbox == NULL) return NULL;
 
@@ -68,13 +60,11 @@ lv_obj_t * lv_spinbox_create(lv_obj_t * par, const lv_obj_t * copy)
     }
 
     if(ancestor_signal == NULL) ancestor_signal = lv_obj_get_signal_cb(spinbox);
-    if(ancestor_design == NULL) ancestor_design = lv_obj_get_design_cb(spinbox);
 
     /*Initialize the allocated 'ext'*/
     ext->value              = 0;
     ext->dec_point_pos      = 0;
     ext->digit_count        = 5;
-    ext->digit_padding_left = 0;
     ext->step               = 1;
     ext->range_max          = 99999;
     ext->range_min          = -99999;
@@ -83,31 +73,10 @@ lv_obj_t * lv_spinbox_create(lv_obj_t * par, const lv_obj_t * copy)
 
     /*The signal and design functions are not copied so set them here*/
     lv_obj_set_signal_cb(spinbox, lv_spinbox_signal);
-    lv_obj_set_design_cb(spinbox, ancestor_design); /*Leave the Text area's design function*/
 
-    /*Init the new spinbox*/
-    if(copy == NULL) {
-        /* No scrolling will happen here so make the scrollable non-clickable
-         * It allows to handle input events in the bg object only.*/
-        lv_obj_set_click(lv_page_get_scrollable(spinbox), false);
-        lv_textarea_set_one_line(spinbox, true);
-        lv_textarea_set_cursor_click_pos(spinbox, true);
-        lv_obj_set_width(spinbox, LV_DPI);
-        lv_theme_apply(spinbox, LV_THEME_SPINBOX);
-    }
-    /*Copy an existing spinbox*/
-    else {
-        lv_spinbox_ext_t * copy_ext = lv_obj_get_ext_attr(copy);
-
-        lv_spinbox_set_value(spinbox, copy_ext->value);
-        lv_spinbox_set_digit_format(spinbox, (uint8_t)copy_ext->digit_count, (uint8_t)copy_ext->dec_point_pos);
-        lv_spinbox_set_range(spinbox, copy_ext->range_min, copy_ext->range_max);
-        lv_spinbox_set_step(spinbox, copy_ext->step);
-        lv_spinbox_set_rollover(spinbox, copy_ext->rollover);
-
-        /*Refresh the style with new signal function*/
-        lv_obj_refresh_style(spinbox, LV_OBJ_PART_ALL, LV_STYLE_PROP_ALL);
-    }
+    lv_textarea_set_one_line(spinbox, true);
+    lv_textarea_set_cursor_click_pos(spinbox, true);
+    lv_obj_set_width(spinbox, LV_DPI);
 
     lv_spinbox_updatevalue(spinbox);
 
@@ -119,20 +88,6 @@ lv_obj_t * lv_spinbox_create(lv_obj_t * par, const lv_obj_t * copy)
 /*=====================
  * Setter functions
  *====================*/
-
-/**
- * Set spinbox rollover function
- * @param spinbox pointer to spinbox
- * @param b true or false to enable or disable (default)
- */
-void lv_spinbox_set_rollover(lv_obj_t * spinbox, bool b)
-{
-    LV_ASSERT_OBJ(spinbox, LV_OBJX_NAME);
-
-    lv_spinbox_ext_t * ext = lv_obj_get_ext_attr(spinbox);
-
-    ext->rollover = b;
-}
 
 /**
  * Set spinbox value
@@ -152,6 +107,20 @@ void lv_spinbox_set_value(lv_obj_t * spinbox, int32_t i)
     ext->value = i;
 
     lv_spinbox_updatevalue(spinbox);
+}
+
+/**
+ * Set spinbox rollover function
+ * @param spinbox pointer to spinbox
+ * @param b true or false to enable or disable (default)
+ */
+void lv_spinbox_set_rollover(lv_obj_t * spinbox, bool b)
+{
+    LV_ASSERT_OBJ(spinbox, LV_OBJX_NAME);
+
+    lv_spinbox_ext_t * ext = lv_obj_get_ext_attr(spinbox);
+
+    ext->rollover = b;
 }
 
 /**
@@ -198,6 +167,7 @@ void lv_spinbox_set_step(lv_obj_t * spinbox, uint32_t step)
     if(ext == NULL) return;
 
     ext->step = step;
+    lv_spinbox_updatevalue(spinbox);
 }
 
 /**
@@ -216,48 +186,15 @@ void lv_spinbox_set_range(lv_obj_t * spinbox, int32_t range_min, int32_t range_m
     ext->range_max = range_max;
     ext->range_min = range_min;
 
-    if(ext->value > ext->range_max) {
-        ext->value = ext->range_max;
-        lv_obj_invalidate(spinbox);
-    }
-    if(ext->value < ext->range_min) {
-        ext->value = ext->range_min;
-        lv_obj_invalidate(spinbox);
-    }
+    if(ext->value > ext->range_max) ext->value = ext->range_max;
+    if(ext->value < ext->range_min) ext->value = ext->range_min;
 
-    lv_spinbox_updatevalue(spinbox);
-}
-
-/**
- * Set spinbox left padding in digits count (added between sign and first digit)
- * @param spinbox pointer to spinbox
- * @param cb Callback function called on value change event
- */
-void lv_spinbox_set_padding_left(lv_obj_t * spinbox, uint8_t padding)
-{
-    LV_ASSERT_OBJ(spinbox, LV_OBJX_NAME);
-
-    lv_spinbox_ext_t * ext  = lv_obj_get_ext_attr(spinbox);
-    ext->digit_padding_left = padding;
     lv_spinbox_updatevalue(spinbox);
 }
 
 /*=====================
  * Getter functions
  *====================*/
-
-/**
- * Get spinbox rollover function status
- * @param spinbox pointer to spinbox
- */
-bool lv_spinbox_get_rollover(lv_obj_t * spinbox)
-{
-    LV_ASSERT_OBJ(spinbox, LV_OBJX_NAME);
-
-    lv_spinbox_ext_t * ext = lv_obj_get_ext_attr(spinbox);
-
-    return ext->rollover;
-}
 
 /**
  * Get the spinbox numeral value (user has to convert to float according to its digit format)
@@ -311,6 +248,19 @@ void lv_spinbox_step_prev(lv_obj_t * spinbox)
     if(new_step <= step_limit) ext->step = new_step;
 
     lv_spinbox_updatevalue(spinbox);
+}
+
+/**
+ * Get spinbox rollover function status
+ * @param spinbox pointer to spinbox
+ */
+bool lv_spinbox_get_rollover(lv_obj_t * spinbox)
+{
+    LV_ASSERT_OBJ(spinbox, LV_OBJX_NAME);
+
+    lv_spinbox_ext_t * ext = lv_obj_get_ext_attr(spinbox);
+
+    return ext->rollover;
 }
 
 /**
@@ -379,35 +329,12 @@ void lv_spinbox_decrement(lv_obj_t * spinbox)
  */
 static lv_res_t lv_spinbox_signal(lv_obj_t * spinbox, lv_signal_t sign, void * param)
 {
-
-    lv_res_t res = LV_RES_OK;
-    if(sign == LV_SIGNAL_GET_STYLE) {
-        lv_get_style_info_t * info = param;
-        info->result = lv_spinbox_get_style(spinbox, info->part);
-        if(info->result != NULL) return LV_RES_OK;
-        else return ancestor_signal(spinbox, sign, param);
-    }
-
     /* Include the ancient signal function */
-    if(sign != LV_SIGNAL_CONTROL) {
-        res = ancestor_signal(spinbox, sign, param);
-        if(res != LV_RES_OK) return res;
-    }
-    if(sign == LV_SIGNAL_GET_TYPE) return lv_obj_handle_get_type_signal(param, LV_OBJX_NAME);
+    lv_res_t res = LV_RES_OK;
+    res = ancestor_signal(spinbox, sign, param);
+    if(res != LV_RES_OK) return res;
 
-
-    if(sign == LV_SIGNAL_CLEANUP) {
-        /*Nothing to cleanup. (No dynamically allocated memory in 'ext')*/
-    }
-    else if(sign == LV_SIGNAL_GET_TYPE) {
-        lv_obj_type_t * buf = param;
-        uint8_t i;
-        for(i = 0; i < LV_MAX_ANCESTOR_NUM - 1; i++) { /*Find the last set data*/
-            if(buf->type[i] == NULL) break;
-        }
-        buf->type[i] = "lv_spinbox";
-    }
-    else if(sign == LV_SIGNAL_RELEASED) {
+    if(sign == LV_SIGNAL_RELEASED) {
         /*If released with an ENCODER then move to the next digit*/
         lv_spinbox_ext_t * ext = lv_obj_get_ext_attr(spinbox);
         lv_indev_t * indev = lv_indev_get_act();
@@ -431,9 +358,9 @@ static lv_res_t lv_spinbox_signal(lv_obj_t * spinbox, lv_signal_t sign, void * p
             }
 #endif
         }
+        /*The cursor has been positioned to a digit.
+         * Set `step` accordingly*/
         else {
-            /*The cursor has been positioned to a digit.
-             * Set `step` accordingly*/
             const char * txt = lv_textarea_get_text(spinbox);
             size_t txt_len = strlen(txt);
 
@@ -458,9 +385,6 @@ static lv_res_t lv_spinbox_signal(lv_obj_t * spinbox, lv_signal_t sign, void * p
             ext->step = 1;
             uint16_t i;
             for(i = 0; i < pos; i++) ext->step *= 10;
-
-
-
         }
     }
     else if(sign == LV_SIGNAL_CONTROL) {
@@ -495,32 +419,6 @@ static lv_res_t lv_spinbox_signal(lv_obj_t * spinbox, lv_signal_t sign, void * p
     return res;
 }
 
-/**
- * Get the style descriptor of a part of the object
- * @param page pointer the object
- * @param part the part from `lv_spinbox_part_t`. (LV_SPINBOX_PART_...)
- * @return pointer to the style descriptor of the specified part
- */
-static lv_style_list_t * lv_spinbox_get_style(lv_obj_t * ta, uint8_t part)
-{
-    LV_ASSERT_OBJ(ta, LV_OBJX_NAME);
-
-    lv_spinbox_ext_t * ext = lv_obj_get_ext_attr(ta);
-    lv_style_list_t * style_dsc_p;
-
-    switch(part) {
-        case LV_SPINBOX_PART_BG:
-            style_dsc_p = &ta->style_list;
-            break;
-        case LV_SPINBOX_PART_CURSOR:
-            style_dsc_p = &ext->ta.cursor.style;
-            break;
-        default:
-            style_dsc_p = NULL;
-    }
-
-    return style_dsc_p;
-}
 static void lv_spinbox_updatevalue(lv_obj_t * spinbox)
 {
     lv_spinbox_ext_t * ext = lv_obj_get_ext_attr(spinbox);
@@ -541,15 +439,9 @@ static void lv_spinbox_updatevalue(lv_obj_t * spinbox)
     }
 
     int32_t i;
-    /*padding left*/
-    for(i = 0; i < ext->digit_padding_left; i++) {
-        (*buf_p) = ' ';
-        buf_p++;
-    }
-
-    char digits[64];
+    char digits[LV_SPINBOX_MAX_DIGIT_COUNT + 4];
     /*Convert the numbers to string (the sign is already handled so always covert positive number)*/
-    _lv_utils_num_to_str(ext->value < 0 ? -ext->value : ext->value, digits);
+    lv_snprintf(digits, sizeof(digits), "%d", LV_MATH_ABS(ext->value));
 
     /*Add leading zeros*/
     int lz_cnt = ext->digit_count - (int)strlen(digits);
@@ -595,9 +487,7 @@ static void lv_spinbox_updatevalue(lv_obj_t * spinbox)
 
     if(cur_pos > intDigits) cur_pos++; /*Skip the decimal point*/
 
-    cur_pos += (ext->digit_padding_left - cur_shift_left);
+    cur_pos -= cur_shift_left;
 
     lv_textarea_set_cursor_pos(spinbox, cur_pos);
 }
-
-#endif

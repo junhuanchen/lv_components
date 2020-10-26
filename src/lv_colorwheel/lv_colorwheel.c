@@ -1,7 +1,7 @@
 /**
  * @file lv_colorwheel.c
  *
- * From @AloyseTech and @paulpv.
+ * Based on the work of   @AloyseTech and @paulpv.
  */
 
 /*********************
@@ -9,17 +9,10 @@
  *********************/
 #include "lv_colorwheel.h"
 
-//#include "../lv_draw/lv_draw_arc.h"
-//#include "../lv_themes/lv_theme.h"
-//#include "../lv_core/lv_indev.h"
-//#include "../lv_core/lv_refr.h"
-//#include "../lv_misc/lv_math.h"
-
 /*********************
  *      DEFINES
  *********************/
 #define LV_OBJX_NAME "lv_colorwheel"
-
 #define LV_CPICKER_DEF_QF 3
 
 /* The OUTER_MASK_WIDTH define is required to assist with the placing of a mask over the outer ring of the widget as when the
@@ -59,6 +52,7 @@ static uint16_t get_angle(lv_obj_t * colorwheel);
  **********************/
 static lv_signal_cb_t ancestor_signal;
 static lv_design_cb_t ancestor_design;
+static bool inited;
 
 /**********************
  *      MACROS
@@ -76,6 +70,17 @@ static lv_design_cb_t ancestor_design;
  */
 lv_obj_t * lv_colorwheel_create(lv_obj_t * parent, bool knob_color)
 {
+    static lv_style_t style_knob;
+    if(!inited) {
+        lv_style_init(&style_knob);
+        lv_style_set_bg_color(&style_knob, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+        lv_style_set_border_color(&style_knob, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+        lv_style_set_border_width(&style_knob, LV_STATE_DEFAULT, LV_DPX(1));
+        lv_style_set_bg_opa(&style_knob, LV_STATE_DEFAULT, LV_OPA_COVER);
+        lv_style_set_radius(&style_knob, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
+        lv_style_set_pad_all(&style_knob, LV_STATE_DEFAULT, LV_DPX(5));
+        inited = true;
+    }
     lv_obj_t * colorwheel = lv_obj_create(parent, NULL);
     LV_ASSERT_MEM(colorwheel);
     if(colorwheel == NULL) return NULL;
@@ -109,7 +114,7 @@ lv_obj_t * lv_colorwheel_create(lv_obj_t * parent, bool knob_color)
 
     lv_obj_set_size(colorwheel, LV_DPI * 2, LV_DPI * 2);
     lv_obj_add_flag(colorwheel, LV_OBJ_FLAG_ADV_HITTEST);
-//    lv_theme_apply(colorwheel, LV_THEME_CPICKER);
+    lv_obj_add_style(colorwheel, LV_COLORWHEEL_PART_KNOB, &style_knob);
     refr_knob_pos(colorwheel);
 
     return colorwheel;

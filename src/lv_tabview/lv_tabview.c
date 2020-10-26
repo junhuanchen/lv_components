@@ -61,7 +61,7 @@ lv_obj_t * lv_tabview_create(lv_obj_t * parent, lv_dir_t tab_pos, lv_coord_t tab
     }
 
     lv_obj_set_size(tabview, 200, 200);
-    lv_obj_set_flex_cont(tabview, flex_dir);
+    lv_obj_set_flex_cont(tabview, flex_dir, LV_FLEX_START);
 
     lv_obj_t * btnm;
     lv_obj_t * cont;
@@ -94,7 +94,7 @@ lv_obj_t * lv_tabview_create(lv_obj_t * parent, lv_dir_t tab_pos, lv_coord_t tab
          break;
      }
 
-    cont->flex_dir = LV_FLEX_DIR_ROW;
+    lv_obj_set_flex_cont(cont, LV_FLEX_DIR_ROW, LV_FLEX_START);
     cont->snap_align_x = LV_SCROLL_SNAP_ALIGN_CENTER;
     lv_obj_add_flag(cont, LV_OBJ_FLAG_SCROLL_STOP);
 
@@ -123,7 +123,7 @@ lv_obj_t * lv_tabview_add_tab(lv_obj_t * tv, const char * name)
     const char ** new_map;
 
     /*top or bottom dir*/
-    if(tv->flex_dir == LV_FLEX_DIR_COLUMN) {
+    if(tv->flex_cont.dir == LV_FLEX_DIR_COLUMN) {
         new_map = lv_mem_alloc((tab_id + 1) * sizeof(const char *));
         _lv_memcpy_small(new_map, old_map, sizeof(const char *) * (tab_id - 1));
         new_map[tab_id - 1] = lv_mem_alloc(strlen(name) + 1);

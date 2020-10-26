@@ -35,7 +35,7 @@
 lv_obj_t * lv_list_create(lv_obj_t * parent)
 {
     lv_obj_t * list = lv_obj_create(parent, NULL);
-    list->flex_dir = LV_FLEX_DIR_COLUMN;
+    list->flex_cont.dir = LV_FLEX_DIR_COLUMN;
 
     return list;
 }
@@ -80,7 +80,7 @@ lv_obj_t * lv_list_add_btn_with_icon(lv_obj_t * list, const char * icon, const c
     lv_obj_set_width(label, LV_FLEX_GROW(1));
     lv_obj_set_flex_item(label, LV_FLEX_START);
 
-    btn->flex_dir = LV_FLEX_DIR_ROW;
+    btn->flex_cont.dir = LV_FLEX_DIR_ROW;
     _lv_flex_refresh(btn);
 
     return label;

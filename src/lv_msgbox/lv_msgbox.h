@@ -46,7 +46,7 @@ extern "C" {
  * it
  * @return pointer to the created message box
  */
-lv_obj_t * lv_msgbox_create(lv_obj_t * parent, const char * title, const char * txt, const char * btn_txts[]);
+lv_obj_t * lv_msgbox_create(const char * title, const char * txt, const char * btn_txts[], bool modal);
 
 /**********************
  *      MACROS
