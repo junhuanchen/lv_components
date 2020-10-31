@@ -88,7 +88,7 @@ static const char * * kb_map[5] = {
     (const char * *)default_kb_map_num,
     (const char * *)NULL,
 };
-static const lv_btnmatrix_ctrl_t * kb_ctrl[4] = {
+static const lv_btnmatrix_ctrl_t * kb_ctrl[5] = {
     default_kb_ctrl_lc_map,
     default_kb_ctrl_uc_map,
     default_kb_ctrl_spec_map,
@@ -309,6 +309,7 @@ void lv_keyboard_def_event_cb(lv_obj_t * kb, lv_event_t event)
     const char * txt = lv_btnmatrix_get_active_btn_text(kb);
     if(txt == NULL) return;
 
+    lv_event_cb_t kb_event_cb = lv_obj_get_event_cb(kb);
     /*Do the corresponding action according to the text of the button*/
     if(strcmp(txt, "abc") == 0) {
         ext->mode = LV_KEYBOARD_MODE_TEXT_LOWER;
@@ -329,7 +330,7 @@ void lv_keyboard_def_event_cb(lv_obj_t * kb, lv_event_t event)
         return;
     }
     else if(strcmp(txt, LV_SYMBOL_CLOSE) == 0) {
-        if(kb->event_cb != lv_keyboard_def_event_cb) {
+        if(kb_event_cb != lv_keyboard_def_event_cb) {
             lv_res_t res = lv_event_send(kb, LV_EVENT_CANCEL, NULL);
             if(res != LV_RES_OK) return;
         }
@@ -341,7 +342,7 @@ void lv_keyboard_def_event_cb(lv_obj_t * kb, lv_event_t event)
         return;
     }
     else if(strcmp(txt, LV_SYMBOL_OK) == 0) {
-        if(kb->event_cb != lv_keyboard_def_event_cb) {
+        if(kb_event_cb != lv_keyboard_def_event_cb) {
             lv_res_t res = lv_event_send(kb, LV_EVENT_APPLY, NULL);
             if(res != LV_RES_OK) return;
         }

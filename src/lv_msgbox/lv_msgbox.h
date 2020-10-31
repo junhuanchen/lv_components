@@ -46,7 +46,19 @@ extern "C" {
  * it
  * @return pointer to the created message box
  */
-lv_obj_t * lv_msgbox_create(const char * title, const char * txt, const char * btn_txts[], bool modal);
+lv_obj_t * lv_msgbox_create(const char * title, const char * txt, const char * btn_txts[], bool add_close_btn);
+
+lv_obj_t * lv_msgbox_get_title(lv_obj_t * mbox);
+
+lv_obj_t * lv_msgbox_get_close_btn(lv_obj_t * mbox);
+
+lv_obj_t * lv_msgbox_get_text(lv_obj_t * mbox);
+
+lv_obj_t * lv_msgbox_get_btns(lv_obj_t * mbox);
+
+const char * lv_msgbox_get_active_btn_text(lv_obj_t * mbox);
+
+void lv_msgbox_close(lv_obj_t * mbox);
 
 /**********************
  *      MACROS

@@ -16,7 +16,7 @@
 #define LV_LED_HEIGHT_DEF (LV_DPI / 3)
 
 #ifndef LV_LED_BRIGHT_MIN
-# define LV_LED_BRIGHT_MIN 120
+# define LV_LED_BRIGHT_MIN 80
 #endif
 
 #ifndef LV_LED_BRIGHT_MAX
@@ -35,6 +35,7 @@ static lv_design_res_t lv_led_design(lv_obj_t * led, const lv_area_t * clip_area
 /**********************
  *  STATIC VARIABLES
  **********************/
+static bool inited;
 static lv_design_cb_t ancestor_design;
 
 /**********************
@@ -53,7 +54,19 @@ static lv_design_cb_t ancestor_design;
  */
 lv_obj_t * lv_led_create(lv_obj_t * parent)
 {
-    LV_LOG_TRACE("led create started");
+    static lv_style_t style_main;
+    if(!inited) {
+        lv_style_init(&style_main);
+        lv_style_set_bg_opa(&style_main, LV_STATE_DEFAULT, LV_OPA_COVER);
+        lv_style_set_bg_color(&style_main, LV_STATE_DEFAULT, lv_theme_get_color_primary());
+        lv_style_set_border_width(&style_main, LV_STATE_DEFAULT, 0);
+        lv_style_set_radius(&style_main, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
+#if LV_USE_SHADOW
+        lv_style_set_shadow_width(&style_main, LV_STATE_DEFAULT, LV_DPX(15));
+        lv_style_set_shadow_color(&style_main, LV_STATE_DEFAULT, lv_theme_get_color_primary());
+        lv_style_set_shadow_spread(&style_main, LV_STATE_DEFAULT, LV_DPX(5));
+#endif
+    }
 
     /*Create the ancestor basic object*/
     lv_obj_t * led = lv_obj_create(parent, NULL);
@@ -74,7 +87,7 @@ lv_obj_t * lv_led_create(lv_obj_t * parent)
 
     lv_obj_set_design_cb(led, lv_led_design);
     lv_obj_set_size(led, LV_LED_WIDTH_DEF, LV_LED_HEIGHT_DEF);
-
+    lv_obj_add_style(led, LV_OBJ_PART_MAIN, &style_main);
     LV_LOG_INFO("led created");
 
     return led;
