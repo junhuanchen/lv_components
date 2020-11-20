@@ -450,7 +450,8 @@ static lv_res_t lv_colorwheel_signal(lv_obj_t * colorwheel, lv_signal_t sign, vo
         lv_style_int_t bottom = lv_obj_get_style_pad_bottom(colorwheel, LV_COLORWHEEL_PART_KNOB);
 
         lv_coord_t knob_pad = LV_MATH_MAX4(left, right, top, bottom) + 2;
-        colorwheel->ext_draw_pad = LV_MATH_MAX(colorwheel->ext_draw_pad, knob_pad);
+        lv_coord_t * s = param;
+        *s = LV_MATH_MAX(*s, knob_pad);
     }
     else if(sign == LV_SIGNAL_COORD_CHG) {
         /*Refresh extended draw area to make knob visible*/

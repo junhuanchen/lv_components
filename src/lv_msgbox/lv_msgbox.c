@@ -68,14 +68,14 @@ lv_obj_t * lv_msgbox_create(const char * title, const char * txt, const char * b
     if(w > 2 * LV_DPI) w = 2 * LV_DPI;
 
     lv_obj_set_size(mbox, w, LV_SIZE_AUTO);
-    lv_obj_set_flex_cont(mbox, LV_FLEX_DIR_ROW | LV_FLEX_WRAP, LV_FLEX_START);
+    lv_obj_set_flex_dir(mbox, LV_FLEX_DIR_ROW_WRAP);
 
     lv_obj_t * label;
     label = lv_label_create(mbox, NULL);
     lv_label_set_text(label, title);
     lv_label_set_long_mode(label, LV_LABEL_LONG_BREAK);
     lv_obj_set_width(label, add_close_btn ? LV_FLEX_GROW(1) : LV_COORD_PCT(100));
-    lv_obj_set_flex_item(label, LV_FLEX_CENTER);
+    lv_obj_set_flex_item(label, true);
     lv_obj_add_style(label, LV_LABEL_PART_MAIN, &style_title);
 
     if(add_close_btn) {
@@ -88,20 +88,20 @@ lv_obj_t * lv_msgbox_create(const char * title, const char * txt, const char * b
         lv_coord_t close_btn_size = LV_MATH_MAX(lv_obj_get_width(label), lv_obj_get_height(label)) + LV_DPX(10);
         lv_obj_set_size(close_btn, close_btn_size, close_btn_size);
         lv_obj_align(label, NULL, LV_ALIGN_CENTER, 0, 0);
-        lv_obj_set_flex_item(close_btn, LV_FLEX_CENTER);
+        lv_obj_set_flex_item_place(close_btn, LV_FLEX_PLACE_CENTER);
     }
 
     label = lv_label_create(mbox, NULL);
     lv_label_set_text(label, txt);
     lv_label_set_long_mode(label, LV_LABEL_LONG_BREAK);
     lv_obj_set_width(label, LV_COORD_PCT(100));
-    lv_obj_set_flex_item(label, LV_FLEX_START);
+    lv_obj_set_flex_item(label, LV_FLEX_PLACE_START);
 
     lv_obj_t * btns = lv_btnmatrix_create(mbox, NULL);
     lv_btnmatrix_set_map(btns, btn_txts);
     lv_obj_reset_style_list(btns, LV_BTNMATRIX_PART_MAIN);
     lv_obj_add_style(btns, LV_BTNMATRIX_PART_MAIN, &style_btnm_bg);
-    lv_obj_set_flex_item(btns, LV_FLEX_START);
+    lv_obj_set_flex_item(btns, LV_FLEX_PLACE_START);
 
     uint32_t btn_cnt = 0;
     while(btn_txts[btn_cnt][0] != '\0') {

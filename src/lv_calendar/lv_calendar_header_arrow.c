@@ -58,25 +58,25 @@ lv_obj_t * lv_calendar_header_arrow_create(lv_obj_t * parent, lv_obj_t * calenda
     lv_obj_add_style(header, LV_OBJ_PART_MAIN, &style_bg);
     lv_coord_t w = calendar ? lv_obj_get_width(calendar) : 2 * LV_DPI;
     lv_obj_set_size(header,  w, LV_SIZE_AUTO);
-    lv_obj_set_flex_cont(header, LV_FLEX_DIR_ROW, LV_FLEX_CENTER);
-    lv_obj_set_flex_gap(header, LV_DPX(5));
+    lv_obj_set_flex_dir(header, LV_FLEX_DIR_ROW);
+    lv_obj_set_flex_place(header, LV_FLEX_PLACE_START, LV_FLEX_PLACE_CENTER);
 
     lv_obj_t * mo_prev = lv_btn_create(header, NULL);
     lv_obj_set_style_local_value_str(mo_prev,  LV_BTN_PART_MAIN, LV_STATE_DEFAULT,  LV_SYMBOL_LEFT);
-    lv_obj_set_flex_item(mo_prev, LV_FLEX_START);
+    lv_obj_set_flex_item_place(mo_prev, LV_FLEX_PLACE_START);
     lv_obj_set_size(mo_prev, btn_size, btn_size);
     lv_obj_set_event_cb(mo_prev, month_event_cb);
 
     lv_obj_t * label = lv_label_create(header, NULL);
     lv_label_set_long_mode(label, LV_LABEL_LONG_SROLL_CIRC);
     lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
-    lv_obj_set_flex_item(label, LV_FLEX_CENTER);
+    lv_obj_set_flex_item_place(label, LV_FLEX_PLACE_CENTER);
     lv_obj_set_width(label, LV_FLEX_GROW(1));
     lv_label_set_text(label, "2020 January");
 
     lv_obj_t * mo_next = lv_btn_create(header, NULL);
     lv_obj_set_style_local_value_str(mo_next,  LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_SYMBOL_RIGHT);
-    lv_obj_set_flex_item(mo_next, LV_FLEX_START);
+    lv_obj_set_flex_item_place(mo_next, LV_FLEX_PLACE_START);
     lv_obj_set_size(mo_next, btn_size, btn_size);
     lv_obj_set_event_cb(mo_next, month_event_cb);
 

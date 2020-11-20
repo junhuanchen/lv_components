@@ -63,7 +63,7 @@ lv_obj_t * lv_list_create(lv_obj_t * parent)
 
     lv_obj_t * list = lv_obj_create(parent, NULL);
     lv_obj_add_style(list, LV_OBJ_PART_MAIN, &style_bg);
-    lv_obj_set_flex_cont(list, LV_FLEX_DIR_COLUMN, LV_FLEX_START);
+    lv_obj_set_flex_dir(list, LV_FLEX_DIR_COLUMN);
 
     return list;
 }
@@ -73,7 +73,7 @@ lv_obj_t * lv_list_add_text(lv_obj_t * list, const char * txt)
     lv_obj_t * label = lv_label_create(list, NULL);
     lv_label_set_text(label, txt);
     lv_label_set_long_mode(label, LV_LABEL_LONG_SROLL_CIRC);
-    lv_obj_set_flex_item(label, LV_FLEX_START);
+    lv_obj_set_flex_item(label, true);
     lv_obj_set_width(label, LV_COORD_PCT(100));
     return label;
 }
@@ -82,14 +82,14 @@ lv_obj_t * lv_list_add_btn(lv_obj_t * list, const char * icon, const char * txt,
 {
     lv_obj_t * btn = lv_obj_create(list, NULL);
     lv_obj_add_style(btn, LV_OBJ_PART_MAIN, &style_btn);
-    lv_obj_set_flex_item(btn, LV_FLEX_CENTER);
+    lv_obj_set_flex_item(btn, true);
     lv_obj_set_width(btn, LV_COORD_PCT(100));
     lv_obj_set_event_cb(btn, event_cb);
 
     if(icon) {
         lv_obj_t * img = lv_img_create(btn, NULL);
         lv_img_set_src(img, icon);
-        lv_obj_set_flex_item(img, LV_FLEX_START);
+        lv_obj_set_flex_item(img, true);
     }
 
     if(txt) {
@@ -97,10 +97,11 @@ lv_obj_t * lv_list_add_btn(lv_obj_t * list, const char * icon, const char * txt,
         lv_label_set_text(label, txt);
         lv_label_set_long_mode(label, LV_LABEL_LONG_SROLL_CIRC);
         lv_obj_set_width(label, LV_FLEX_GROW(1));
-        lv_obj_set_flex_item(label, LV_FLEX_START);
+        lv_obj_set_flex_item(label, true);
 
-        lv_obj_set_flex_gap(btn, LV_DPX(5));
-        lv_obj_set_flex_cont(btn, LV_FLEX_DIR_ROW, LV_FLEX_CENTER);
+//        lv_obj_set_flex_gap(btn, LV_DPX(5));
+        lv_obj_set_flex_place(btn, LV_FLEX_PLACE_START, LV_FLEX_PLACE_CENTER);
+        lv_obj_set_flex_dir(btn, LV_FLEX_DIR_ROW);
     }
 
     return btn;

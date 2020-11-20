@@ -63,20 +63,20 @@ lv_obj_t * lv_tabview_create(lv_obj_t * parent, lv_dir_t tab_pos, lv_coord_t tab
         flex_dir = LV_FLEX_DIR_COLUMN;
         break;
     case LV_DIR_BOTTOM:
-        flex_dir = LV_FLEX_DIR_COLUMN | LV_FLEX_REVERSE;
+        flex_dir = LV_FLEX_DIR_COLUMN_REVERSE;
         break;
     case LV_DIR_LEFT:
         flex_dir = LV_FLEX_DIR_ROW;
         break;
     case LV_DIR_RIGHT:
-        flex_dir = LV_FLEX_DIR_ROW | LV_FLEX_REVERSE;
+        flex_dir = LV_FLEX_DIR_ROW_REVERSE;
         break;
     }
 
     lv_obj_reset_style_list(tabview, LV_OBJ_PART_MAIN);
 
     lv_obj_set_size(tabview, LV_COORD_PCT(100), LV_COORD_PCT(100));
-    lv_obj_set_flex_cont(tabview, flex_dir, LV_FLEX_START);
+    lv_obj_set_flex_dir(tabview, flex_dir);
 
     lv_obj_t * btnm;
     lv_obj_t * cont;
@@ -97,8 +97,8 @@ lv_obj_t * lv_tabview_create(lv_obj_t * parent, lv_dir_t tab_pos, lv_coord_t tab
     lv_obj_reset_style_list(cont, LV_OBJ_PART_MAIN);
     lv_obj_set_scroll_mode(cont, LV_SCROLL_MODE_OFF);
 
-    lv_obj_set_flex_item(btnm, LV_FLEX_START);
-    lv_obj_set_flex_item(cont, LV_FLEX_START);
+    lv_obj_set_flex_item(btnm, LV_FLEX_PLACE_START);
+    lv_obj_set_flex_item(cont, LV_FLEX_PLACE_START);
 
     switch(tab_pos) {
      case LV_DIR_TOP:
@@ -113,7 +113,7 @@ lv_obj_t * lv_tabview_create(lv_obj_t * parent, lv_dir_t tab_pos, lv_coord_t tab
          break;
      }
 
-    lv_obj_set_flex_cont(cont, LV_FLEX_DIR_ROW, LV_FLEX_START);
+    lv_obj_set_flex_dir(cont, LV_FLEX_DIR_ROW);
     lv_obj_set_snap_align_x(cont, LV_SCROLL_SNAP_ALIGN_CENTER);
     lv_obj_add_flag(cont, LV_OBJ_FLAG_SCROLL_STOP);
 
@@ -129,7 +129,7 @@ lv_obj_t * lv_tabview_add_tab(lv_obj_t * tv, const char * name)
     lv_obj_add_style(page, LV_BTNMATRIX_PART_MAIN, &style_bg);
     uint32_t tab_id = lv_obj_count_children(cont);
 
-    lv_obj_set_flex_item(page, LV_FLEX_START);
+    lv_obj_set_flex_item(page, true);
     lv_obj_set_size(page, LV_COORD_PCT(100), LV_COORD_PCT(100));
 
     lv_obj_t * btns = lv_tabview_get_tab_btns(tv);
