@@ -158,7 +158,6 @@ lv_obj_t * lv_calendar_create(lv_obj_t * parent, const char * day_names[])
  */
 void lv_calendar_set_today_date(lv_obj_t * calendar, lv_calendar_date_t * today)
 {
-    LV_ASSERT_OBJ(calendar, LV_OBJX_NAME);
     LV_ASSERT_NULL(today);
 
     lv_calendar_ext_t * ext = lv_obj_get_ext_attr(calendar);
@@ -178,7 +177,6 @@ void lv_calendar_set_today_date(lv_obj_t * calendar, lv_calendar_date_t * today)
  */
 void lv_calendar_set_highlighted_dates(lv_obj_t * calendar, lv_calendar_date_t highlighted[], uint16_t date_num)
 {
-    LV_ASSERT_OBJ(calendar, LV_OBJX_NAME);
     LV_ASSERT_NULL(highlighted);
 
     lv_calendar_ext_t * ext    = lv_obj_get_ext_attr(calendar);
@@ -196,7 +194,6 @@ void lv_calendar_set_highlighted_dates(lv_obj_t * calendar, lv_calendar_date_t h
  */
 void lv_calendar_set_showed_date(lv_obj_t * calendar, lv_calendar_date_t * showed)
 {
-    LV_ASSERT_OBJ(calendar, LV_OBJX_NAME);
     LV_ASSERT_NULL(showed);
 
     lv_calendar_ext_t * ext = lv_obj_get_ext_attr(calendar);
@@ -245,8 +242,6 @@ void lv_calendar_set_showed_date(lv_obj_t * calendar, lv_calendar_date_t * showe
  */
 lv_calendar_date_t * lv_calendar_get_today_date(const lv_obj_t * calendar)
 {
-    LV_ASSERT_OBJ(calendar, LV_OBJX_NAME);
-
     lv_calendar_ext_t * ext = lv_obj_get_ext_attr(calendar);
     return &ext->today;
 }
@@ -258,8 +253,6 @@ lv_calendar_date_t * lv_calendar_get_today_date(const lv_obj_t * calendar)
  */
 lv_calendar_date_t * lv_calendar_get_showed_date(const lv_obj_t * calendar)
 {
-    LV_ASSERT_OBJ(calendar, LV_OBJX_NAME);
-
     lv_calendar_ext_t * ext = lv_obj_get_ext_attr(calendar);
     return &ext->showed_date;
 }
@@ -271,8 +264,6 @@ lv_calendar_date_t * lv_calendar_get_showed_date(const lv_obj_t * calendar)
  */
 lv_calendar_date_t * lv_calendar_get_highlighted_dates(const lv_obj_t * calendar)
 {
-    LV_ASSERT_OBJ(calendar, LV_OBJX_NAME);
-
     lv_calendar_ext_t * ext = lv_obj_get_ext_attr(calendar);
     return ext->highlighted_dates;
 }
@@ -284,8 +275,6 @@ lv_calendar_date_t * lv_calendar_get_highlighted_dates(const lv_obj_t * calendar
  */
 uint16_t lv_calendar_get_highlighted_dates_num(const lv_obj_t * calendar)
 {
-    LV_ASSERT_OBJ(calendar, LV_OBJX_NAME);
-
     lv_calendar_ext_t * ext = lv_obj_get_ext_attr(calendar);
     return ext->highlighted_dates_num;
 }

@@ -164,7 +164,6 @@ lv_obj_t * lv_keyboard_create(lv_obj_t * parent)
  */
 void lv_keyboard_set_textarea(lv_obj_t * kb, lv_obj_t * ta)
 {
-    LV_ASSERT_OBJ(kb, LV_OBJX_NAME);
     if(ta) {
         LV_ASSERT_OBJ(ta, "lv_textarea");
     }
@@ -191,8 +190,6 @@ void lv_keyboard_set_textarea(lv_obj_t * kb, lv_obj_t * ta)
  */
 void lv_keyboard_set_mode(lv_obj_t * kb, lv_keyboard_mode_t mode)
 {
-    LV_ASSERT_OBJ(kb, LV_OBJX_NAME);
-
     lv_keyboard_ext_t * ext = lv_obj_get_ext_attr(kb);
     if(ext->mode == mode) return;
 
@@ -208,8 +205,6 @@ void lv_keyboard_set_mode(lv_obj_t * kb, lv_keyboard_mode_t mode)
  */
 void lv_keyboard_set_cursor_manage(lv_obj_t * kb, bool en)
 {
-    LV_ASSERT_OBJ(kb, LV_OBJX_NAME);
-
     lv_keyboard_ext_t * ext = lv_obj_get_ext_attr(kb);
     if(ext->cursor_mng == en) return;
 
@@ -251,8 +246,6 @@ void lv_keyboard_set_map(lv_obj_t * kb, lv_keyboard_mode_t mode, const char * ma
  */
 lv_obj_t * lv_keyboard_get_textarea(const lv_obj_t * kb)
 {
-    LV_ASSERT_OBJ(kb, LV_OBJX_NAME);
-
     lv_keyboard_ext_t * ext = lv_obj_get_ext_attr(kb);
     return ext->ta;
 }
@@ -264,8 +257,6 @@ lv_obj_t * lv_keyboard_get_textarea(const lv_obj_t * kb)
  */
 lv_keyboard_mode_t lv_keyboard_get_mode(const lv_obj_t * kb)
 {
-    LV_ASSERT_OBJ(kb, LV_OBJX_NAME);
-
     lv_keyboard_ext_t * ext = lv_obj_get_ext_attr(kb);
     return ext->mode;
 }
@@ -277,8 +268,6 @@ lv_keyboard_mode_t lv_keyboard_get_mode(const lv_obj_t * kb)
  */
 bool lv_keyboard_get_cursor_manage(const lv_obj_t * kb)
 {
-    LV_ASSERT_OBJ(kb, LV_OBJX_NAME);
-
     lv_keyboard_ext_t * ext = lv_obj_get_ext_attr(kb);
     return ext->cursor_mng == 0 ? false : true;
 }
@@ -296,8 +285,6 @@ bool lv_keyboard_get_cursor_manage(const lv_obj_t * kb)
  */
 void lv_keyboard_def_event_cb(lv_obj_t * kb, lv_event_t event)
 {
-    LV_ASSERT_OBJ(kb, LV_OBJX_NAME);
-
     if(event != LV_EVENT_VALUE_CHANGED) return;
 
     lv_keyboard_ext_t * ext = lv_obj_get_ext_attr(kb);

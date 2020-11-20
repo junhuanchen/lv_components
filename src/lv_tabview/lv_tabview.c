@@ -95,7 +95,7 @@ lv_obj_t * lv_tabview_create(lv_obj_t * parent, lv_dir_t tab_pos, lv_coord_t tab
 
     lv_obj_set_event_cb(cont, cont_event_cb);
     lv_obj_reset_style_list(cont, LV_OBJ_PART_MAIN);
-    lv_obj_set_scroll_mode(cont, LV_SCROLL_MODE_OFF);
+    lv_obj_set_scrollbar_mode(cont, LV_SCROLLBAR_MODE_OFF);
 
     lv_obj_set_flex_item(btnm, LV_FLEX_PLACE_START);
     lv_obj_set_flex_item(cont, LV_FLEX_PLACE_START);
