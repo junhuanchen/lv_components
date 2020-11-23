@@ -12,7 +12,7 @@
 /*********************
  *      DEFINES
  *********************/
-#define LV_OBJX_NAME "lv_colorwheel"
+
 #define LV_CPICKER_DEF_QF 3
 
 /* The OUTER_MASK_WIDTH define is required to assist with the placing of a mask over the outer ring of the widget as when the
@@ -132,8 +132,6 @@ lv_obj_t * lv_colorwheel_create(lv_obj_t * parent, bool knob_color)
  */
 bool lv_colorwheel_set_hsv(lv_obj_t * colorwheel, lv_color_hsv_t hsv)
 {
-    LV_ASSERT_OBJ(colorwheel, LV_OBJX_NAME);
-
     if(hsv.h > 360) hsv.h %= 360;
     if(hsv.s > 100) hsv.s = 100;
     if(hsv.v > 100) hsv.v = 100;
@@ -159,8 +157,6 @@ bool lv_colorwheel_set_hsv(lv_obj_t * colorwheel, lv_color_hsv_t hsv)
  */
 bool lv_colorwheel_set_rgb(lv_obj_t * colorwheel, lv_color_t color)
 {
-    LV_ASSERT_OBJ(colorwheel, LV_OBJX_NAME);
-
     lv_color32_t c32;
     c32.full = lv_color_to32(color);
 
@@ -175,8 +171,6 @@ bool lv_colorwheel_set_rgb(lv_obj_t * colorwheel, lv_color_t color)
  */
 void lv_colorwheel_set_mode(lv_obj_t * colorwheel, lv_colorwheel_mode_t mode)
 {
-    LV_ASSERT_OBJ(colorwheel, LV_OBJX_NAME);
-
     lv_colorwheel_ext_t * ext = lv_obj_get_ext_attr(colorwheel);
 
     ext->mode = mode;
@@ -191,8 +185,6 @@ void lv_colorwheel_set_mode(lv_obj_t * colorwheel, lv_colorwheel_mode_t mode)
  */
 void lv_colorwheel_set_mode_fixed(lv_obj_t * colorwheel, bool fixed)
 {
-    LV_ASSERT_OBJ(colorwheel, LV_OBJX_NAME);
-
     lv_colorwheel_ext_t * ext = lv_obj_get_ext_attr(colorwheel);
 
     ext->mode_fixed = fixed;
@@ -210,8 +202,6 @@ void lv_colorwheel_set_mode_fixed(lv_obj_t * colorwheel, bool fixed)
  */
 lv_color_hsv_t lv_colorwheel_get_hsv(lv_obj_t * colorwheel)
 {
-    LV_ASSERT_OBJ(colorwheel, LV_OBJX_NAME);
-
     lv_colorwheel_ext_t * ext = lv_obj_get_ext_attr(colorwheel);
 
     return ext->hsv;
@@ -224,8 +214,6 @@ lv_color_hsv_t lv_colorwheel_get_hsv(lv_obj_t * colorwheel)
  */
 lv_color_t lv_colorwheel_get_rgb(lv_obj_t * colorwheel)
 {
-    LV_ASSERT_OBJ(colorwheel, LV_OBJX_NAME);
-
     lv_colorwheel_ext_t * ext = lv_obj_get_ext_attr(colorwheel);
 
     return lv_color_hsv_to_rgb(ext->hsv.h, ext->hsv.s, ext->hsv.v);
@@ -238,8 +226,6 @@ lv_color_t lv_colorwheel_get_rgb(lv_obj_t * colorwheel)
  */
 lv_colorwheel_mode_t lv_colorwheel_get_color_mode(lv_obj_t * colorwheel)
 {
-    LV_ASSERT_OBJ(colorwheel, LV_OBJX_NAME);
-
     lv_colorwheel_ext_t * ext = lv_obj_get_ext_attr(colorwheel);
 
     return ext->mode;
@@ -252,8 +238,6 @@ lv_colorwheel_mode_t lv_colorwheel_get_color_mode(lv_obj_t * colorwheel)
  */
 bool lv_colorwheel_get_color_mode_fixed(lv_obj_t * colorwheel)
 {
-    LV_ASSERT_OBJ(colorwheel, LV_OBJX_NAME);
-
     lv_colorwheel_ext_t * ext = lv_obj_get_ext_attr(colorwheel);
 
     return ext->mode_fixed;
@@ -436,7 +420,6 @@ static lv_res_t lv_colorwheel_signal(lv_obj_t * colorwheel, lv_signal_t sign, vo
 
     res = ancestor_signal(colorwheel, sign, param);
     if(res != LV_RES_OK) return res;
-    if(sign == LV_SIGNAL_GET_TYPE) return _lv_obj_handle_get_type_signal(param, LV_OBJX_NAME);
 
     lv_colorwheel_ext_t * ext = lv_obj_get_ext_attr(colorwheel);
 
@@ -614,8 +597,6 @@ static lv_res_t lv_colorwheel_signal(lv_obj_t * colorwheel, lv_signal_t sign, vo
  */
 static lv_style_list_t * lv_colorwheel_get_style(lv_obj_t * colorwheel, uint8_t part)
 {
-    LV_ASSERT_OBJ(colorwheel, LV_OBJX_NAME);
-
     lv_colorwheel_ext_t * ext = lv_obj_get_ext_attr(colorwheel);
     lv_style_list_t * style_dsc_p;
 
