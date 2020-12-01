@@ -696,8 +696,7 @@ static lv_color_t angle_to_mode_color(lv_obj_t * colorwheel, uint16_t angle)
             color = lv_color_hsv_to_rgb(angle, ext->hsv.s, ext->hsv.v);
             break;
         case LV_COLORWHEEL_MODE_SATURATION:
-            if(angle < 180) color = lv_color_hsv_to_rgb(ext->hsv.h, (angle * 100) / 360, ext->hsv.v);
-            else color = LV_COLOR_BLACK;
+            color = lv_color_hsv_to_rgb(ext->hsv.h, (angle * 100) / 360, ext->hsv.v);
             break;
         case LV_COLORWHEEL_MODE_VALUE:
             color = lv_color_hsv_to_rgb(ext->hsv.h, ext->hsv.s, (angle * 100) / 360);
