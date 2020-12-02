@@ -28,8 +28,6 @@ extern "C" {
 #error "lv_mbox: lv_label is required. Enable it in lv_conf.h (LV_USE_LABEL  1) "
 #endif
 
-#include "lvgl/lvgl.h"
-
 /*********************
  *      DEFINES
  *********************/
