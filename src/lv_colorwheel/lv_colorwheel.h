@@ -13,7 +13,11 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include "lvgl/lvgl.h"
+#if defined(LV_LVGL_H_INCLUDE_SIMPLE)
+#include "lvgl.h"
+#else
+#include "../lvgl/lvgl.h"
+#endif
 
 /*********************
  *      DEFINES
@@ -123,7 +127,7 @@ lv_color_hsv_t lv_colorwheel_get_hsv(lv_obj_t * colorwheel);
  * @param colorwheel pointer to color picker object
  * @return current selected color
  */
-lv_color_t lv_colorwheel_get_color(lv_obj_t * colorwheel);
+lv_color_t lv_colorwheel_get_rgb(lv_obj_t * colorwheel);
 
 /**
  * Get if the color mode is changed on long press on center
