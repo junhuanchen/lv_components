@@ -64,6 +64,7 @@ lv_obj_t * lv_list_create(lv_obj_t * parent)
     lv_obj_t * list = lv_obj_create(parent, NULL);
     lv_obj_add_style(list, LV_OBJ_PART_MAIN, &style_bg);
     lv_obj_set_flex_dir(list, LV_FLEX_DIR_COLUMN);
+    lv_obj_set_size(list, LV_DPI * 2, LV_DPI * 3);
 
     return list;
 }
@@ -99,7 +100,7 @@ lv_obj_t * lv_list_add_btn(lv_obj_t * list, const char * icon, const char * txt,
         lv_obj_set_width(label, LV_FLEX_GROW(1));
         lv_obj_set_flex_item(label, true);
 
-//        lv_obj_set_flex_gap(btn, LV_DPX(5));
+        lv_obj_set_flex_gap(btn, LV_DPX(5));
         lv_obj_set_flex_place(btn, LV_FLEX_PLACE_START, LV_FLEX_PLACE_CENTER);
         lv_obj_set_flex_dir(btn, LV_FLEX_DIR_ROW);
     }

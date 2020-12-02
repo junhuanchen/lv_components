@@ -42,12 +42,7 @@ static bool inited = false;
  *   GLOBAL FUNCTIONS
  **********************/
 
-/**
- * Create a calendar object
- * @param par pointer to an object, it will be the parent of the new calendar
- * @param copy pointer to a calendar object, if not NULL then the new object will be copied from it
- * @return pointer to the created calendar
- */
+
 lv_obj_t * lv_calendar_create(lv_obj_t * parent, const char * day_names[])
 {
     static lv_style_t style_bg;
@@ -128,7 +123,7 @@ lv_obj_t * lv_calendar_create(lv_obj_t * parent, const char * day_names[])
     lv_btnmatrix_set_map(calendar, ext->map);
 
     for(i = 0; i < 7; i++) {
-        lv_btnmatrix_set_btn_ctrl(calendar, i, LV_BTNMATRIX_CTRL_TYPE_2);
+        lv_btnmatrix_set_btn_ctrl(calendar, i, LV_BTNMATRIX_CTRL_TYPE_2 | LV_BTNMATRIX_CTRL_DISABLED);
     }
 
     lv_calendar_set_showed_date(calendar, &ext->showed_date);
@@ -142,20 +137,10 @@ lv_obj_t * lv_calendar_create(lv_obj_t * parent, const char * day_names[])
  * Add/remove functions
  *=====================*/
 
-/*
- * New object specific "add" or "remove" functions come here
- */
-
 /*=====================
  * Setter functions
  *====================*/
 
-/**
- * Set the today's date
- * @param calendar pointer to a calendar object
- * @param today pointer to an `lv_calendar_date_t` variable containing the date of today. The value
- * will be saved it can be local variable too.
- */
 void lv_calendar_set_today_date(lv_obj_t * calendar, lv_calendar_date_t * today)
 {
     LV_ASSERT_NULL(today);
@@ -168,13 +153,6 @@ void lv_calendar_set_today_date(lv_obj_t * calendar, lv_calendar_date_t * today)
     highlight_update(calendar);
 }
 
-/**
- * Set the the highlighted dates
- * @param calendar pointer to a calendar object
- * @param highlighted pointer to an `lv_calendar_date_t` array containing the dates. ONLY A POINTER
- * WILL BE SAVED! CAN'T BE LOCAL ARRAY.
- * @param date_num number of dates in the array
- */
 void lv_calendar_set_highlighted_dates(lv_obj_t * calendar, lv_calendar_date_t highlighted[], uint16_t date_num)
 {
     LV_ASSERT_NULL(highlighted);
@@ -186,12 +164,6 @@ void lv_calendar_set_highlighted_dates(lv_obj_t * calendar, lv_calendar_date_t h
     highlight_update(calendar);
 }
 
-/**
- * Set the currently showed
- * @param calendar pointer to a calendar object
- * @param showed pointer to an `lv_calendar_date_t` variable containing the date to show. The value
- * will be saved it can be local variable too.
- */
 void lv_calendar_set_showed_date(lv_obj_t * calendar, lv_calendar_date_t * showed)
 {
     LV_ASSERT_NULL(showed);
@@ -208,9 +180,13 @@ void lv_calendar_set_showed_date(lv_obj_t * calendar, lv_calendar_date_t * showe
 
     lv_btnmatrix_clear_btn_ctrl_all(calendar, LV_BTNMATRIX_CTRL_DISABLED);
 
+    uint8_t i;
+    for(i = 0; i < 7; i++) {
+        lv_btnmatrix_set_btn_ctrl(calendar, i, LV_BTNMATRIX_CTRL_DISABLED);
+    }
+
     uint8_t act_mo_len = get_month_length(d.year, d.month);
     uint8_t day_first = get_day_of_week(d.year, d.month, d.day);
-    uint8_t i;
     uint8_t c;
     for(i = day_first, c = 1; i < act_mo_len + day_first; i++, c++) {
         lv_snprintf(ext->nums[i], sizeof(ext->nums[0]), "%d", c);
@@ -268,16 +244,34 @@ lv_calendar_date_t * lv_calendar_get_highlighted_dates(const lv_obj_t * calendar
     return ext->highlighted_dates;
 }
 
-/**
- * Get the number of the highlighted dates
- * @param calendar pointer to a calendar object
- * @return number of highlighted days
- */
 uint16_t lv_calendar_get_highlighted_dates_num(const lv_obj_t * calendar)
 {
     lv_calendar_ext_t * ext = lv_obj_get_ext_attr(calendar);
     return ext->highlighted_dates_num;
 }
+
+bool lv_calendar_get_pressed_date(const lv_obj_t * calendar, lv_calendar_date_t * date)
+{
+    lv_calendar_ext_t * ext = lv_obj_get_ext_attr(calendar);
+    uint16_t d = lv_btnmatrix_get_active_btn(calendar);
+    if(d == LV_BTNMATRIX_BTN_NONE) {
+        date->year = 0;
+        date->month = 0;
+        date->day = 0;
+        return false;
+    }
+
+    const char * txt = lv_btnmatrix_get_active_btn_text(calendar);
+
+    if(txt[1] == 0) date->day = txt[0] - '0';
+    else date->day = (txt[0] - '0') * 10 + (txt[1] - '0');
+
+    date->year = ext->showed_date.year;
+    date->month = ext->showed_date.month;
+
+    return true;
+}
+
 
 /**********************
  *  STATIC FUNCTIONS

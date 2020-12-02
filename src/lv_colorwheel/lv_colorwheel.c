@@ -68,7 +68,7 @@ static bool inited;
  * @param copy pointer to a color_picker object, if not NULL then the new object will be copied from it
  * @return pointer to the created color_picker
  */
-lv_obj_t * lv_colorwheel_create(lv_obj_t * parent, bool knob_color)
+lv_obj_t * lv_colorwheel_create(lv_obj_t * parent, bool knob_recolor)
 {
     static lv_style_t style_knob;
     if(!inited) {
@@ -104,7 +104,7 @@ lv_obj_t * lv_colorwheel_create(lv_obj_t * parent, bool knob_color)
     ext->mode_fixed = 0;
     ext->last_click_time = 0;
     ext->last_change_time = 0;
-    ext->knob.colored = knob_color;
+    ext->knob.recolor = knob_recolor;
 
     lv_style_list_init(&ext->knob.style_list);
 
@@ -361,7 +361,7 @@ static void draw_knob(lv_obj_t * colorwheel, const lv_area_t * mask)
 
     cir_dsc.radius = LV_RADIUS_CIRCLE;
 
-    if(ext->knob.colored) {
+    if(ext->knob.recolor) {
         cir_dsc.bg_color = lv_colorwheel_get_rgb(colorwheel);
     }
 

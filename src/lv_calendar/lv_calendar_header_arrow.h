@@ -39,7 +39,6 @@ typedef struct {
  */
 lv_obj_t * lv_calendar_header_arrow_create(lv_obj_t * parent, lv_obj_t * calendar, const char * month_names[], lv_coord_t btn_size);
 
-void lv_calendar_header_arrow_set_calendar(lv_obj_t * header, lv_obj_t * calendar);
 /**********************
  *      MACROS
  **********************/

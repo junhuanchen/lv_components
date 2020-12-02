@@ -37,7 +37,7 @@ typedef struct {
     struct {
         lv_style_list_t style_list;
         lv_point_t pos;
-        uint8_t colored     : 1;
+        uint8_t recolor     : 1;
     } knob;
     uint32_t last_click_time;
     uint32_t last_change_time;
@@ -60,10 +60,11 @@ enum {
 
 /**
  * Create a color picker objects with disc shape
- * @param par pointer to an object, it will be the parent of the new color picker
+ * @param parent pointer to an object, it will be the parent of the new color picker
+ * @param knob_recolor true: set the knob's color to the current color
  * @return pointer to the created color picker
  */
-lv_obj_t * lv_colorwheel_create(lv_obj_t * parent, bool knob_color);
+lv_obj_t * lv_colorwheel_create(lv_obj_t * parent, bool knob_recolor);
 
 /*=====================
  * Setter functions

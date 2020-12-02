@@ -28,8 +28,8 @@ extern "C" {
  */
 typedef struct {
     uint16_t year;
-    int8_t month;
-    int8_t day;
+    int8_t month;  /** 1..12*/
+    int8_t day;    /** 1..31*/
 } lv_calendar_date_t;
 
 /*Data of calendar*/
@@ -49,7 +49,7 @@ typedef struct {
  **********************/
 
 /**
- * Create a calendar objects
+ * Create a calendar object
  * @param par pointer to an object, it will be the parent of the new calendar
  * @param copy pointer to a calendar object, if not NULL then the new object will be copied from it
  * @return pointer to the created calendar
@@ -117,14 +117,6 @@ lv_calendar_date_t * lv_calendar_get_today_date(const lv_obj_t * calendar);
 lv_calendar_date_t * lv_calendar_get_showed_date(const lv_obj_t * calendar);
 
 /**
- * Get the the pressed date.
- * @param calendar pointer to a calendar object
- * @return pointer to an `lv_calendar_date_t` variable containing the pressed date.
- *         `NULL` if not date pressed (e.g. the header)
- */
-lv_calendar_date_t * lv_calendar_get_pressed_date(const lv_obj_t * calendar);
-
-/**
  * Get the the highlighted dates
  * @param calendar pointer to a calendar object
  * @return pointer to an `lv_calendar_date_t` array containing the dates.
@@ -139,11 +131,12 @@ lv_calendar_date_t * lv_calendar_get_highlighted_dates(const lv_obj_t * calendar
 uint16_t lv_calendar_get_highlighted_dates_num(const lv_obj_t * calendar);
 
 /**
- * Get the name of the days
+ * Get the currently pressed day
  * @param calendar pointer to a calendar object
- * @return pointer to the array of day names
+ * @param date store the pressed date here
+ * @return true: there is a valid pressed date; false: there is no pressed data
  */
-const char ** lv_calendar_get_day_names(const lv_obj_t * calendar);
+bool lv_calendar_get_pressed_date(const lv_obj_t * calendar, lv_calendar_date_t * date);
 
 /*=====================
  * Other functions

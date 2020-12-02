@@ -31,7 +31,6 @@ static void cont_event_cb(lv_obj_t * cont, lv_event_t e);
  **********************/
 static bool inited;
 static lv_style_t style_bg;
-static lv_style_t style_btnm;
 
 /**********************
  *      MACROS
@@ -46,9 +45,6 @@ lv_obj_t * lv_tabview_create(lv_obj_t * parent, lv_dir_t tab_pos, lv_coord_t tab
     if(!inited) {
         lv_style_init(&style_bg);
         lv_style_set_radius(&style_bg, LV_STATE_DEFAULT, 0);
-
-        lv_style_init(&style_btnm);
-        lv_style_set_border_side(&style_btnm, LV_STATE_DEFAULT, LV_BORDER_SIDE_LEFT | LV_BORDER_SIDE_RIGHT | LV_BORDER_SIDE_TOP);
 
         inited = true;
     }
@@ -90,8 +86,8 @@ lv_obj_t * lv_tabview_create(lv_obj_t * parent, lv_dir_t tab_pos, lv_coord_t tab
     map[0] = "";
     lv_btnmatrix_set_map(btnm, map);
     lv_obj_add_style(btnm, LV_BTNMATRIX_PART_MAIN, &style_bg);
-    lv_obj_add_style(btnm, LV_BTNMATRIX_PART_MAIN, &style_btnm);
     lv_obj_set_event_cb(btnm, btns_event_cb);
+    lv_obj_add_flag(btnm, LV_OBJ_FLAG_EVENT_BUBBLE);
 
     lv_obj_set_event_cb(cont, cont_event_cb);
     lv_obj_reset_style_list(cont, LV_OBJ_PART_MAIN);
@@ -116,6 +112,7 @@ lv_obj_t * lv_tabview_create(lv_obj_t * parent, lv_dir_t tab_pos, lv_coord_t tab
     lv_obj_set_flex_dir(cont, LV_FLEX_DIR_ROW);
     lv_obj_set_snap_align_x(cont, LV_SCROLL_SNAP_ALIGN_CENTER);
     lv_obj_add_flag(cont, LV_OBJ_FLAG_SCROLL_STOP);
+    lv_obj_clear_flag(cont, LV_OBJ_FLAG_FOCUS_SCROLL);
 
     return tabview;
 }
@@ -126,6 +123,7 @@ lv_obj_t * lv_tabview_add_tab(lv_obj_t * tv, const char * name)
     lv_obj_t * cont = lv_tabview_get_content(tv);
 
     lv_obj_t * page = lv_obj_create(cont, NULL);
+    lv_obj_clear_flag(page, LV_OBJ_FLAG_CLICK_FOCUSABLE);
     lv_obj_add_style(page, LV_BTNMATRIX_PART_MAIN, &style_bg);
     uint32_t tab_id = lv_obj_count_children(cont);
 
@@ -189,6 +187,14 @@ void lv_tabview_set_act(lv_obj_t * tv, uint32_t id)
 
     lv_obj_t * btns = lv_tabview_get_tab_btns(tv);
     lv_btnmatrix_set_btn_ctrl(btns, id, LV_BTNMATRIX_CTRL_CHECKED);
+    ext->tab_cur = id;
+}
+
+uint16_t lv_tabview_get_tab_act(lv_obj_t * tv)
+{
+    lv_tabview_ext_t * ext = lv_obj_get_ext_attr(tv);
+    return ext->tab_cur;
+
 }
 
 lv_obj_t * lv_tabview_get_content(lv_obj_t * tv)
